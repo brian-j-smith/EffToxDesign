@@ -1,0 +1,30 @@
+Package: EffToxDesign
+Type: Package
+Title: Dose-Finding Clinical Trial Design Based on Efficacy-Toxicity Trade-Offs
+Version: 0.1
+Date: 2018-05-05
+Authors@R: c(person("Brian J", "Smith", email = "brian-j-smith@uiowa.edu", role = c("aut", "cre")),
+             person("Kristian", "Brock", email = "kristian.brock@gmail.com", role = c("aut")),
+             person("Brian J", "Smith", role = "cph"))
+Maintainer: Brian J Smith <brian-j-smith@uiowa.edu>
+Description: An adaptive Bayesian method for dose-finding in phase I/II clinical trials based on trade-offs between the probabilities of treatment efficacy and toxicity, as developed by Thall and Cood (2004, Biometrics 60, 684-693).
+License: GPL-3
+Depends:
+  R (>= 3.0.2),
+  Rcpp (>= 0.12.8),
+  methods (>= 3.3.2)
+Imports:
+  rstan (>= 2.12.1),
+  rstantools (>= 1.1.0),
+  gtools
+LinkingTo: 
+  StanHeaders (>= 2.12.0.1), 
+  rstan (>= 2.12.1), 
+  BH (>= 1.62.0.1), 
+  Rcpp (>= 0.12.8), 
+  RcppEigen (>= 0.3.2.9.0)
+Suggests:
+  knitr,
+  rmarkdown,
+  ggplot2
+RoxygenNote: 6.0.1
