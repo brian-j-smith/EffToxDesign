@@ -5,15 +5,15 @@
 functions {
   real log_joint_pdf(real[] coded_doses, real[] coded_doses_squ,
                      int num_patients, int[] eff, int[] tox, int[] doses,
-                     real alpha, real beta, real gamma, real zeta, real eta, real psi) {
+                     real muT, real betaT1, real muE, real betaE1, real betaE2, real psi) {
     real p;
     p = 0;
     for(j in 1:num_patients) {
       real prob_eff;
       real prob_tox;
       real p_j;
-      prob_eff = inv_logit(gamma + zeta * coded_doses[doses[j]] + eta * coded_doses_squ[doses[j]]);
-      prob_tox = inv_logit(alpha + beta * coded_doses[doses[j]]);
+      prob_eff = inv_logit(muE + betaE1 * coded_doses[doses[j]] + betaE2 * coded_doses_squ[doses[j]]);
+      prob_tox = inv_logit(muT + betaT1 * coded_doses[doses[j]]);
       p_j = prob_eff^eff[j] * (1 - prob_eff)^(1 - eff[j]) * prob_tox^tox[j] *
               (1 - prob_tox)^(1 - tox[j]) + (-1)^(eff[j] + tox[j]) * prob_eff *
               prob_tox * (1 - prob_eff) * (1 - prob_tox) * (exp(psi) - 1) / (exp(psi) + 1);
@@ -25,16 +25,16 @@ functions {
 
 data {
   // Hyperparameters
-  real alpha_mean;
-  real<lower=0> alpha_sd;
-  real beta_mean;
-  real<lower=0> beta_sd;
-  real gamma_mean;
-  real<lower=0> gamma_sd;
-  real zeta_mean;
-  real<lower=0> zeta_sd;
-  real eta_mean;
-  real<lower=0> eta_sd;
+  real muT_mean;
+  real<lower=0> muT_sd;
+  real betaT1_mean;
+  real<lower=0> betaT1_sd;
+  real muE_mean;
+  real<lower=0> muE_sd;
+  real betaE1_mean;
+  real<lower=0> betaE1_sd;
+  real betaE2_mean;
+  real<lower=0> betaE2_sd;
   real psi_mean;
   real<lower=0> psi_sd;
   // Fixed trial parameters
@@ -73,12 +73,12 @@ transformed data {
 
 parameters {
   // Coefficients in toxicity logit model:
-  real alpha;
-  real beta;
+  real muT;
+  real betaT1;
   // Coefficients in efficacy logit model:
-  real gamma;
-  real zeta;
-  real eta;
+  real muE;
+  real betaE1;
+  real betaE2;
   // Association:
   real psi;
 }
@@ -94,8 +94,8 @@ transformed parameters {
   for(i in 1:num_doses)
   {
     real r_to_the_p; // Convenience variable, as in (2) of Cook.
-    prob_tox[i] = inv_logit(alpha + beta * coded_doses[i]);
-    prob_eff[i] = inv_logit(gamma + zeta * coded_doses[i] + eta * coded_doses_squ[i]);
+    prob_tox[i] = inv_logit(muT + betaT1 * coded_doses[i]);
+    prob_eff[i] = inv_logit(muE + betaE1 * coded_doses[i] + betaE2 * coded_doses_squ[i]);
     prob_acc_eff[i] = int_step(prob_eff[i] - efficacy_hurdle);
     prob_acc_tox[i] = int_step(toxicity_hurdle - prob_tox[i]);
     r_to_the_p = ((1 - prob_eff[i]) / (1 - eff0))^p + (prob_tox[i] / tox1)^p;
@@ -104,12 +104,12 @@ transformed parameters {
 }
 
 model {
-  target += normal_lpdf(alpha | alpha_mean, alpha_sd);
-  target += normal_lpdf(beta | beta_mean, beta_sd);
-  target += normal_lpdf(gamma | gamma_mean, gamma_sd);
-  target += normal_lpdf(zeta | zeta_mean, zeta_sd);
-  target += normal_lpdf(eta | eta_mean, eta_sd);
+  target += normal_lpdf(muT | muT_mean, muT_sd);
+  target += normal_lpdf(betaT1 | betaT1_mean, betaT1_sd);
+  target += normal_lpdf(muE | muE_mean, muE_sd);
+  target += normal_lpdf(betaE1 | betaE1_mean, betaE1_sd);
+  target += normal_lpdf(betaE2 | betaE2_mean, betaE2_sd);
   target += normal_lpdf(psi | psi_mean, psi_sd);
   target += log_joint_pdf(coded_doses, coded_doses_squ, num_patients, eff, tox, doses,
-                          alpha, beta, gamma, zeta, eta, psi);
+                          muT, betaT1, muE, betaE1, betaE2, psi);
 }

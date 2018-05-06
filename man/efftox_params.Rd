@@ -32,25 +32,25 @@ convenience.
    \item \code{tox_star}, Toxicity probability of a third point on
    the neutral utility curve that joins (\code{eff0}, 0) to (1, \code{tox1}).
    A number between 0 and 1.
-   \item \code{alpha_mean}, The prior mean of the intercept term in the toxicity
+   \item \code{muT_mean}, The prior mean of the intercept term in the toxicity
    logit model. A number.
-   \item \code{alpha_sd}, The prior standard deviation of the intercept term in
+   \item \code{muT_sd}, The prior standard deviation of the intercept term in
    the toxicity logit model. A number.
-   \item \code{beta_mean}, The prior mean of the slope term in the toxicity
+   \item \code{betaT1_mean}, The prior mean of the slope term in the toxicity
    logit model. A number.
-   \item \code{beta_sd}, The prior standard deviation of the slope term in
+   \item \code{betaT1_sd}, The prior standard deviation of the slope term in
    the toxicity logit model. A number.
-   \item \code{gamma_mean}, The prior mean of the intercept term in the efficacy
+   \item \code{muE_mean}, The prior mean of the intercept term in the efficacy
    logit model. A number.
-   \item \code{gamma_sd}, The prior standard deviation of the intercept term in
+   \item \code{muE_sd}, The prior standard deviation of the intercept term in
    the efficacy logit model. A number.
-   \item \code{zeta_mean}, The prior mean of the slope term in the efficacy
+   \item \code{betaE1_mean}, The prior mean of the slope term in the efficacy
    logit model. A number.
-   \item \code{zeta_sd}, The prior standard deviation of the slope term in
+   \item \code{betaE1_sd}, The prior standard deviation of the slope term in
    the efficacy logit model. A number.
-   \item \code{eta_mean}, The prior mean of the squared term coefficient in the
+   \item \code{betaE2_mean}, The prior mean of the squared term coefficient in the
    efficacy logit model. A number.
-   \item \code{eta_sd}, The prior standard deviation of the squared term
+   \item \code{betaE2_sd}, The prior standard deviation of the squared term
    coefficient in the efficacy logit model. A number.
    \item \code{psi_mean}, The prior mean of the association term in the combined
    efficacy-toxicity model. A number.

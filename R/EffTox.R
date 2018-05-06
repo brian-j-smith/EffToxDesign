@@ -96,11 +96,11 @@ efftox_parameters_demo <- function() {
     eff_star = eff_star,
     tox_star = tox_star,
     
-    alpha_mean = -7.9593, alpha_sd = 3.5487,
-    beta_mean = 1.5482, beta_sd = 3.5018,
-    gamma_mean = 0.7367, gamma_sd = 2.5423,
-    zeta_mean = 3.4181, zeta_sd = 2.4406,
-    eta_mean = 0, eta_sd = 0.2,
+    muT_mean = -7.9593, muT_sd = 3.5487,
+    betaT1_mean = 1.5482, betaT1_sd = 3.5018,
+    muE_mean = 0.7367, muE_sd = 2.5423,
+    betaE1_mean = 3.4181, betaE1_sd = 2.4406,
+    betaE2_mean = 0, betaE2_sd = 0.2,
     psi_mean = 0, psi_sd = 1,
     
     eff = c(),

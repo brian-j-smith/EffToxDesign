@@ -27,7 +27,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_EffTox");
-    reader.add_event(116, 116, "end", "model_EffTox");
+    reader.add_event(115, 115, "end", "model_EffTox");
     return reader;
 }
 
@@ -39,11 +39,11 @@ log_joint_pdf(const std::vector<T0__>& coded_doses,
                   const std::vector<int>& eff,
                   const std::vector<int>& tox,
                   const std::vector<int>& doses,
-                  const T6__& alpha,
-                  const T7__& beta,
-                  const T8__& gamma,
-                  const T9__& zeta,
-                  const T10__& eta,
+                  const T6__& muT,
+                  const T7__& betaT1,
+                  const T8__& muE,
+                  const T9__& betaE1,
+                  const T10__& betaE2,
                   const T11__& psi, std::ostream* pstream__) {
     typedef typename boost::math::tools::promote_args<T0__, T1__, T6__, T7__, typename boost::math::tools::promote_args<T8__, T9__, T10__, T11__>::type>::type fun_scalar_t__;
     typedef fun_scalar_t__ fun_return_scalar_t__;
@@ -89,9 +89,9 @@ log_joint_pdf(const std::vector<T0__>& coded_doses,
 
 
             current_statement_begin__ = 15;
-            stan::math::assign(prob_eff, inv_logit(((gamma + (zeta * get_base1(coded_doses,get_base1(doses,j,"doses",1),"coded_doses",1))) + (eta * get_base1(coded_doses_squ,get_base1(doses,j,"doses",1),"coded_doses_squ",1)))));
+            stan::math::assign(prob_eff, inv_logit(((muE + (betaE1 * get_base1(coded_doses,get_base1(doses,j,"doses",1),"coded_doses",1))) + (betaE2 * get_base1(coded_doses_squ,get_base1(doses,j,"doses",1),"coded_doses_squ",1)))));
             current_statement_begin__ = 16;
-            stan::math::assign(prob_tox, inv_logit((alpha + (beta * get_base1(coded_doses,get_base1(doses,j,"doses",1),"coded_doses",1)))));
+            stan::math::assign(prob_tox, inv_logit((muT + (betaT1 * get_base1(coded_doses,get_base1(doses,j,"doses",1),"coded_doses",1)))));
             current_statement_begin__ = 17;
             stan::math::assign(p_j, ((((pow(prob_eff,get_base1(eff,j,"eff",1)) * pow((1 - prob_eff),(1 - get_base1(eff,j,"eff",1)))) * pow(prob_tox,get_base1(tox,j,"tox",1))) * pow((1 - prob_tox),(1 - get_base1(tox,j,"tox",1)))) + ((((((pow(-(1),(get_base1(eff,j,"eff",1) + get_base1(tox,j,"tox",1))) * prob_eff) * prob_tox) * (1 - prob_eff)) * (1 - prob_tox)) * (exp(psi) - 1)) / (exp(psi) + 1))));
             current_statement_begin__ = 20;
@@ -118,28 +118,28 @@ struct log_joint_pdf_functor__ {
                   const std::vector<int>& eff,
                   const std::vector<int>& tox,
                   const std::vector<int>& doses,
-                  const T6__& alpha,
-                  const T7__& beta,
-                  const T8__& gamma,
-                  const T9__& zeta,
-                  const T10__& eta,
+                  const T6__& muT,
+                  const T7__& betaT1,
+                  const T8__& muE,
+                  const T9__& betaE1,
+                  const T10__& betaE2,
                   const T11__& psi, std::ostream* pstream__) const {
-        return log_joint_pdf(coded_doses, coded_doses_squ, num_patients, eff, tox, doses, alpha, beta, gamma, zeta, eta, psi, pstream__);
+        return log_joint_pdf(coded_doses, coded_doses_squ, num_patients, eff, tox, doses, muT, betaT1, muE, betaE1, betaE2, psi, pstream__);
     }
 };
 
 class model_EffTox : public prob_grad {
 private:
-    double alpha_mean;
-    double alpha_sd;
-    double beta_mean;
-    double beta_sd;
-    double gamma_mean;
-    double gamma_sd;
-    double zeta_mean;
-    double zeta_sd;
-    double eta_mean;
-    double eta_sd;
+    double muT_mean;
+    double muT_sd;
+    double betaT1_mean;
+    double betaT1_sd;
+    double muE_mean;
+    double muE_sd;
+    double betaE1_mean;
+    double betaE1_sd;
+    double betaE2_mean;
+    double betaE2_sd;
     double psi_mean;
     double psi_sd;
     int num_doses;
@@ -191,65 +191,65 @@ public:
         // initialize member variables
         try {
             current_statement_begin__ = 28;
-            context__.validate_dims("data initialization", "alpha_mean", "double", context__.to_vec());
-            alpha_mean = double(0);
-            vals_r__ = context__.vals_r("alpha_mean");
+            context__.validate_dims("data initialization", "muT_mean", "double", context__.to_vec());
+            muT_mean = double(0);
+            vals_r__ = context__.vals_r("muT_mean");
             pos__ = 0;
-            alpha_mean = vals_r__[pos__++];
+            muT_mean = vals_r__[pos__++];
             current_statement_begin__ = 29;
-            context__.validate_dims("data initialization", "alpha_sd", "double", context__.to_vec());
-            alpha_sd = double(0);
-            vals_r__ = context__.vals_r("alpha_sd");
+            context__.validate_dims("data initialization", "muT_sd", "double", context__.to_vec());
+            muT_sd = double(0);
+            vals_r__ = context__.vals_r("muT_sd");
             pos__ = 0;
-            alpha_sd = vals_r__[pos__++];
+            muT_sd = vals_r__[pos__++];
             current_statement_begin__ = 30;
-            context__.validate_dims("data initialization", "beta_mean", "double", context__.to_vec());
-            beta_mean = double(0);
-            vals_r__ = context__.vals_r("beta_mean");
+            context__.validate_dims("data initialization", "betaT1_mean", "double", context__.to_vec());
+            betaT1_mean = double(0);
+            vals_r__ = context__.vals_r("betaT1_mean");
             pos__ = 0;
-            beta_mean = vals_r__[pos__++];
+            betaT1_mean = vals_r__[pos__++];
             current_statement_begin__ = 31;
-            context__.validate_dims("data initialization", "beta_sd", "double", context__.to_vec());
-            beta_sd = double(0);
-            vals_r__ = context__.vals_r("beta_sd");
+            context__.validate_dims("data initialization", "betaT1_sd", "double", context__.to_vec());
+            betaT1_sd = double(0);
+            vals_r__ = context__.vals_r("betaT1_sd");
             pos__ = 0;
-            beta_sd = vals_r__[pos__++];
+            betaT1_sd = vals_r__[pos__++];
             current_statement_begin__ = 32;
-            context__.validate_dims("data initialization", "gamma_mean", "double", context__.to_vec());
-            gamma_mean = double(0);
-            vals_r__ = context__.vals_r("gamma_mean");
+            context__.validate_dims("data initialization", "muE_mean", "double", context__.to_vec());
+            muE_mean = double(0);
+            vals_r__ = context__.vals_r("muE_mean");
             pos__ = 0;
-            gamma_mean = vals_r__[pos__++];
+            muE_mean = vals_r__[pos__++];
             current_statement_begin__ = 33;
-            context__.validate_dims("data initialization", "gamma_sd", "double", context__.to_vec());
-            gamma_sd = double(0);
-            vals_r__ = context__.vals_r("gamma_sd");
+            context__.validate_dims("data initialization", "muE_sd", "double", context__.to_vec());
+            muE_sd = double(0);
+            vals_r__ = context__.vals_r("muE_sd");
             pos__ = 0;
-            gamma_sd = vals_r__[pos__++];
+            muE_sd = vals_r__[pos__++];
             current_statement_begin__ = 34;
-            context__.validate_dims("data initialization", "zeta_mean", "double", context__.to_vec());
-            zeta_mean = double(0);
-            vals_r__ = context__.vals_r("zeta_mean");
+            context__.validate_dims("data initialization", "betaE1_mean", "double", context__.to_vec());
+            betaE1_mean = double(0);
+            vals_r__ = context__.vals_r("betaE1_mean");
             pos__ = 0;
-            zeta_mean = vals_r__[pos__++];
+            betaE1_mean = vals_r__[pos__++];
             current_statement_begin__ = 35;
-            context__.validate_dims("data initialization", "zeta_sd", "double", context__.to_vec());
-            zeta_sd = double(0);
-            vals_r__ = context__.vals_r("zeta_sd");
+            context__.validate_dims("data initialization", "betaE1_sd", "double", context__.to_vec());
+            betaE1_sd = double(0);
+            vals_r__ = context__.vals_r("betaE1_sd");
             pos__ = 0;
-            zeta_sd = vals_r__[pos__++];
+            betaE1_sd = vals_r__[pos__++];
             current_statement_begin__ = 36;
-            context__.validate_dims("data initialization", "eta_mean", "double", context__.to_vec());
-            eta_mean = double(0);
-            vals_r__ = context__.vals_r("eta_mean");
+            context__.validate_dims("data initialization", "betaE2_mean", "double", context__.to_vec());
+            betaE2_mean = double(0);
+            vals_r__ = context__.vals_r("betaE2_mean");
             pos__ = 0;
-            eta_mean = vals_r__[pos__++];
+            betaE2_mean = vals_r__[pos__++];
             current_statement_begin__ = 37;
-            context__.validate_dims("data initialization", "eta_sd", "double", context__.to_vec());
-            eta_sd = double(0);
-            vals_r__ = context__.vals_r("eta_sd");
+            context__.validate_dims("data initialization", "betaE2_sd", "double", context__.to_vec());
+            betaE2_sd = double(0);
+            vals_r__ = context__.vals_r("betaE2_sd");
             pos__ = 0;
-            eta_sd = vals_r__[pos__++];
+            betaE2_sd = vals_r__[pos__++];
             current_statement_begin__ = 38;
             context__.validate_dims("data initialization", "psi_mean", "double", context__.to_vec());
             psi_mean = double(0);
@@ -352,19 +352,19 @@ public:
             // validate, data variables
             current_statement_begin__ = 28;
             current_statement_begin__ = 29;
-            check_greater_or_equal(function__,"alpha_sd",alpha_sd,0);
+            check_greater_or_equal(function__,"muT_sd",muT_sd,0);
             current_statement_begin__ = 30;
             current_statement_begin__ = 31;
-            check_greater_or_equal(function__,"beta_sd",beta_sd,0);
+            check_greater_or_equal(function__,"betaT1_sd",betaT1_sd,0);
             current_statement_begin__ = 32;
             current_statement_begin__ = 33;
-            check_greater_or_equal(function__,"gamma_sd",gamma_sd,0);
+            check_greater_or_equal(function__,"muE_sd",muE_sd,0);
             current_statement_begin__ = 34;
             current_statement_begin__ = 35;
-            check_greater_or_equal(function__,"zeta_sd",zeta_sd,0);
+            check_greater_or_equal(function__,"betaE1_sd",betaE1_sd,0);
             current_statement_begin__ = 36;
             current_statement_begin__ = 37;
-            check_greater_or_equal(function__,"eta_sd",eta_sd,0);
+            check_greater_or_equal(function__,"betaE2_sd",betaE2_sd,0);
             current_statement_begin__ = 38;
             current_statement_begin__ = 39;
             check_greater_or_equal(function__,"psi_sd",psi_sd,0);
@@ -439,13 +439,13 @@ public:
             ++num_params_r__;
             current_statement_begin__ = 77;
             ++num_params_r__;
+            current_statement_begin__ = 79;
+            ++num_params_r__;
             current_statement_begin__ = 80;
             ++num_params_r__;
             current_statement_begin__ = 81;
             ++num_params_r__;
-            current_statement_begin__ = 82;
-            ++num_params_r__;
-            current_statement_begin__ = 84;
+            current_statement_begin__ = 83;
             ++num_params_r__;
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
@@ -467,69 +467,69 @@ public:
         std::vector<double> vals_r__;
         std::vector<int> vals_i__;
 
-        if (!(context__.contains_r("alpha")))
-            throw std::runtime_error("variable alpha missing");
-        vals_r__ = context__.vals_r("alpha");
+        if (!(context__.contains_r("muT")))
+            throw std::runtime_error("variable muT missing");
+        vals_r__ = context__.vals_r("muT");
         pos__ = 0U;
-        context__.validate_dims("initialization", "alpha", "double", context__.to_vec());
-        double alpha(0);
-        alpha = vals_r__[pos__++];
+        context__.validate_dims("initialization", "muT", "double", context__.to_vec());
+        double muT(0);
+        muT = vals_r__[pos__++];
         try {
-            writer__.scalar_unconstrain(alpha);
+            writer__.scalar_unconstrain(muT);
         } catch (const std::exception& e) { 
-            throw std::runtime_error(std::string("Error transforming variable alpha: ") + e.what());
+            throw std::runtime_error(std::string("Error transforming variable muT: ") + e.what());
         }
 
-        if (!(context__.contains_r("beta")))
-            throw std::runtime_error("variable beta missing");
-        vals_r__ = context__.vals_r("beta");
+        if (!(context__.contains_r("betaT1")))
+            throw std::runtime_error("variable betaT1 missing");
+        vals_r__ = context__.vals_r("betaT1");
         pos__ = 0U;
-        context__.validate_dims("initialization", "beta", "double", context__.to_vec());
-        double beta(0);
-        beta = vals_r__[pos__++];
+        context__.validate_dims("initialization", "betaT1", "double", context__.to_vec());
+        double betaT1(0);
+        betaT1 = vals_r__[pos__++];
         try {
-            writer__.scalar_unconstrain(beta);
+            writer__.scalar_unconstrain(betaT1);
         } catch (const std::exception& e) { 
-            throw std::runtime_error(std::string("Error transforming variable beta: ") + e.what());
+            throw std::runtime_error(std::string("Error transforming variable betaT1: ") + e.what());
         }
 
-        if (!(context__.contains_r("gamma")))
-            throw std::runtime_error("variable gamma missing");
-        vals_r__ = context__.vals_r("gamma");
+        if (!(context__.contains_r("muE")))
+            throw std::runtime_error("variable muE missing");
+        vals_r__ = context__.vals_r("muE");
         pos__ = 0U;
-        context__.validate_dims("initialization", "gamma", "double", context__.to_vec());
-        double gamma(0);
-        gamma = vals_r__[pos__++];
+        context__.validate_dims("initialization", "muE", "double", context__.to_vec());
+        double muE(0);
+        muE = vals_r__[pos__++];
         try {
-            writer__.scalar_unconstrain(gamma);
+            writer__.scalar_unconstrain(muE);
         } catch (const std::exception& e) { 
-            throw std::runtime_error(std::string("Error transforming variable gamma: ") + e.what());
+            throw std::runtime_error(std::string("Error transforming variable muE: ") + e.what());
         }
 
-        if (!(context__.contains_r("zeta")))
-            throw std::runtime_error("variable zeta missing");
-        vals_r__ = context__.vals_r("zeta");
+        if (!(context__.contains_r("betaE1")))
+            throw std::runtime_error("variable betaE1 missing");
+        vals_r__ = context__.vals_r("betaE1");
         pos__ = 0U;
-        context__.validate_dims("initialization", "zeta", "double", context__.to_vec());
-        double zeta(0);
-        zeta = vals_r__[pos__++];
+        context__.validate_dims("initialization", "betaE1", "double", context__.to_vec());
+        double betaE1(0);
+        betaE1 = vals_r__[pos__++];
         try {
-            writer__.scalar_unconstrain(zeta);
+            writer__.scalar_unconstrain(betaE1);
         } catch (const std::exception& e) { 
-            throw std::runtime_error(std::string("Error transforming variable zeta: ") + e.what());
+            throw std::runtime_error(std::string("Error transforming variable betaE1: ") + e.what());
         }
 
-        if (!(context__.contains_r("eta")))
-            throw std::runtime_error("variable eta missing");
-        vals_r__ = context__.vals_r("eta");
+        if (!(context__.contains_r("betaE2")))
+            throw std::runtime_error("variable betaE2 missing");
+        vals_r__ = context__.vals_r("betaE2");
         pos__ = 0U;
-        context__.validate_dims("initialization", "eta", "double", context__.to_vec());
-        double eta(0);
-        eta = vals_r__[pos__++];
+        context__.validate_dims("initialization", "betaE2", "double", context__.to_vec());
+        double betaE2(0);
+        betaE2 = vals_r__[pos__++];
         try {
-            writer__.scalar_unconstrain(eta);
+            writer__.scalar_unconstrain(betaE2);
         } catch (const std::exception& e) { 
-            throw std::runtime_error(std::string("Error transforming variable eta: ") + e.what());
+            throw std::runtime_error(std::string("Error transforming variable betaE2: ") + e.what());
         }
 
         if (!(context__.contains_r("psi")))
@@ -576,40 +576,40 @@ public:
             // model parameters
             stan::io::reader<T__> in__(params_r__,params_i__);
 
-            T__ alpha;
-            (void) alpha;  // dummy to suppress unused var warning
+            T__ muT;
+            (void) muT;  // dummy to suppress unused var warning
             if (jacobian__)
-                alpha = in__.scalar_constrain(lp__);
+                muT = in__.scalar_constrain(lp__);
             else
-                alpha = in__.scalar_constrain();
+                muT = in__.scalar_constrain();
 
-            T__ beta;
-            (void) beta;  // dummy to suppress unused var warning
+            T__ betaT1;
+            (void) betaT1;  // dummy to suppress unused var warning
             if (jacobian__)
-                beta = in__.scalar_constrain(lp__);
+                betaT1 = in__.scalar_constrain(lp__);
             else
-                beta = in__.scalar_constrain();
+                betaT1 = in__.scalar_constrain();
 
-            T__ gamma;
-            (void) gamma;  // dummy to suppress unused var warning
+            T__ muE;
+            (void) muE;  // dummy to suppress unused var warning
             if (jacobian__)
-                gamma = in__.scalar_constrain(lp__);
+                muE = in__.scalar_constrain(lp__);
             else
-                gamma = in__.scalar_constrain();
+                muE = in__.scalar_constrain();
 
-            T__ zeta;
-            (void) zeta;  // dummy to suppress unused var warning
+            T__ betaE1;
+            (void) betaE1;  // dummy to suppress unused var warning
             if (jacobian__)
-                zeta = in__.scalar_constrain(lp__);
+                betaE1 = in__.scalar_constrain(lp__);
             else
-                zeta = in__.scalar_constrain();
+                betaE1 = in__.scalar_constrain();
 
-            T__ eta;
-            (void) eta;  // dummy to suppress unused var warning
+            T__ betaE2;
+            (void) betaE2;  // dummy to suppress unused var warning
             if (jacobian__)
-                eta = in__.scalar_constrain(lp__);
+                betaE2 = in__.scalar_constrain(lp__);
             else
-                eta = in__.scalar_constrain();
+                betaE2 = in__.scalar_constrain();
 
             T__ psi;
             (void) psi;  // dummy to suppress unused var warning
@@ -620,37 +620,37 @@ public:
 
 
             // transformed parameters
-            current_statement_begin__ = 88;
+            current_statement_begin__ = 87;
             validate_non_negative_index("prob_eff", "num_doses", num_doses);
             vector<T__> prob_eff(num_doses);
             stan::math::initialize(prob_eff, DUMMY_VAR__);
             stan::math::fill(prob_eff,DUMMY_VAR__);
-            current_statement_begin__ = 89;
+            current_statement_begin__ = 88;
             validate_non_negative_index("prob_tox", "num_doses", num_doses);
             vector<T__> prob_tox(num_doses);
             stan::math::initialize(prob_tox, DUMMY_VAR__);
             stan::math::fill(prob_tox,DUMMY_VAR__);
-            current_statement_begin__ = 90;
+            current_statement_begin__ = 89;
             validate_non_negative_index("prob_acc_eff", "num_doses", num_doses);
             vector<T__> prob_acc_eff(num_doses);
             stan::math::initialize(prob_acc_eff, DUMMY_VAR__);
             stan::math::fill(prob_acc_eff,DUMMY_VAR__);
-            current_statement_begin__ = 91;
+            current_statement_begin__ = 90;
             validate_non_negative_index("prob_acc_tox", "num_doses", num_doses);
             vector<T__> prob_acc_tox(num_doses);
             stan::math::initialize(prob_acc_tox, DUMMY_VAR__);
             stan::math::fill(prob_acc_tox,DUMMY_VAR__);
-            current_statement_begin__ = 92;
+            current_statement_begin__ = 91;
             validate_non_negative_index("utility", "num_doses", num_doses);
             vector<T__> utility(num_doses);
             stan::math::initialize(utility, DUMMY_VAR__);
             stan::math::fill(utility,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 95;
+            current_statement_begin__ = 94;
             for (int i = 1; i <= num_doses; ++i) {
                 {
-                current_statement_begin__ = 97;
+                current_statement_begin__ = 96;
                 T__ r_to_the_p;
                 (void) r_to_the_p;  // dummy to suppress unused var warning
 
@@ -658,17 +658,17 @@ public:
                 stan::math::fill(r_to_the_p,DUMMY_VAR__);
 
 
+                current_statement_begin__ = 97;
+                stan::math::assign(get_base1_lhs(prob_tox,i,"prob_tox",1), inv_logit((muT + (betaT1 * get_base1(coded_doses,i,"coded_doses",1)))));
                 current_statement_begin__ = 98;
-                stan::math::assign(get_base1_lhs(prob_tox,i,"prob_tox",1), inv_logit((alpha + (beta * get_base1(coded_doses,i,"coded_doses",1)))));
+                stan::math::assign(get_base1_lhs(prob_eff,i,"prob_eff",1), inv_logit(((muE + (betaE1 * get_base1(coded_doses,i,"coded_doses",1))) + (betaE2 * get_base1(coded_doses_squ,i,"coded_doses_squ",1)))));
                 current_statement_begin__ = 99;
-                stan::math::assign(get_base1_lhs(prob_eff,i,"prob_eff",1), inv_logit(((gamma + (zeta * get_base1(coded_doses,i,"coded_doses",1))) + (eta * get_base1(coded_doses_squ,i,"coded_doses_squ",1)))));
-                current_statement_begin__ = 100;
                 stan::math::assign(get_base1_lhs(prob_acc_eff,i,"prob_acc_eff",1), int_step((get_base1(prob_eff,i,"prob_eff",1) - efficacy_hurdle)));
-                current_statement_begin__ = 101;
+                current_statement_begin__ = 100;
                 stan::math::assign(get_base1_lhs(prob_acc_tox,i,"prob_acc_tox",1), int_step((toxicity_hurdle - get_base1(prob_tox,i,"prob_tox",1))));
-                current_statement_begin__ = 102;
+                current_statement_begin__ = 101;
                 stan::math::assign(r_to_the_p, (pow(((1 - get_base1(prob_eff,i,"prob_eff",1)) / (1 - eff0)),p) + pow((get_base1(prob_tox,i,"prob_tox",1) / tox1),p)));
-                current_statement_begin__ = 103;
+                current_statement_begin__ = 102;
                 stan::math::assign(get_base1_lhs(utility,i,"utility",1), (1 - pow(r_to_the_p,(1.0 / p))));
                 }
             }
@@ -712,44 +712,44 @@ public:
 
             const char* function__ = "validate transformed params";
             (void) function__;  // dummy to suppress unused var warning
-            current_statement_begin__ = 88;
+            current_statement_begin__ = 87;
             for (int k0__ = 0; k0__ < num_doses; ++k0__) {
                 check_greater_or_equal(function__,"prob_eff[k0__]",prob_eff[k0__],0);
                 check_less_or_equal(function__,"prob_eff[k0__]",prob_eff[k0__],1);
             }
-            current_statement_begin__ = 89;
+            current_statement_begin__ = 88;
             for (int k0__ = 0; k0__ < num_doses; ++k0__) {
                 check_greater_or_equal(function__,"prob_tox[k0__]",prob_tox[k0__],0);
                 check_less_or_equal(function__,"prob_tox[k0__]",prob_tox[k0__],1);
             }
-            current_statement_begin__ = 90;
+            current_statement_begin__ = 89;
             for (int k0__ = 0; k0__ < num_doses; ++k0__) {
                 check_greater_or_equal(function__,"prob_acc_eff[k0__]",prob_acc_eff[k0__],0);
                 check_less_or_equal(function__,"prob_acc_eff[k0__]",prob_acc_eff[k0__],1);
             }
-            current_statement_begin__ = 91;
+            current_statement_begin__ = 90;
             for (int k0__ = 0; k0__ < num_doses; ++k0__) {
                 check_greater_or_equal(function__,"prob_acc_tox[k0__]",prob_acc_tox[k0__],0);
                 check_less_or_equal(function__,"prob_acc_tox[k0__]",prob_acc_tox[k0__],1);
             }
-            current_statement_begin__ = 92;
+            current_statement_begin__ = 91;
 
             // model body
 
+            current_statement_begin__ = 107;
+            lp_accum__.add(normal_log(muT,muT_mean,muT_sd));
             current_statement_begin__ = 108;
-            lp_accum__.add(normal_log(alpha,alpha_mean,alpha_sd));
+            lp_accum__.add(normal_log(betaT1,betaT1_mean,betaT1_sd));
             current_statement_begin__ = 109;
-            lp_accum__.add(normal_log(beta,beta_mean,beta_sd));
+            lp_accum__.add(normal_log(muE,muE_mean,muE_sd));
             current_statement_begin__ = 110;
-            lp_accum__.add(normal_log(gamma,gamma_mean,gamma_sd));
+            lp_accum__.add(normal_log(betaE1,betaE1_mean,betaE1_sd));
             current_statement_begin__ = 111;
-            lp_accum__.add(normal_log(zeta,zeta_mean,zeta_sd));
+            lp_accum__.add(normal_log(betaE2,betaE2_mean,betaE2_sd));
             current_statement_begin__ = 112;
-            lp_accum__.add(normal_log(eta,eta_mean,eta_sd));
-            current_statement_begin__ = 113;
             lp_accum__.add(normal_log(psi,psi_mean,psi_sd));
-            current_statement_begin__ = 114;
-            lp_accum__.add(log_joint_pdf(coded_doses,coded_doses_squ,num_patients,eff,tox,doses,alpha,beta,gamma,zeta,eta,psi, pstream__));
+            current_statement_begin__ = 113;
+            lp_accum__.add(log_joint_pdf(coded_doses,coded_doses_squ,num_patients,eff,tox,doses,muT,betaT1,muE,betaE1,betaE2,psi, pstream__));
 
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
@@ -776,11 +776,11 @@ public:
 
     void get_param_names(std::vector<std::string>& names__) const {
         names__.resize(0);
-        names__.push_back("alpha");
-        names__.push_back("beta");
-        names__.push_back("gamma");
-        names__.push_back("zeta");
-        names__.push_back("eta");
+        names__.push_back("muT");
+        names__.push_back("betaT1");
+        names__.push_back("muE");
+        names__.push_back("betaE1");
+        names__.push_back("betaE2");
         names__.push_back("psi");
         names__.push_back("prob_eff");
         names__.push_back("prob_tox");
@@ -835,17 +835,17 @@ public:
         static const char* function__ = "model_EffTox_namespace::write_array";
         (void) function__;  // dummy to suppress unused var warning
         // read-transform, write parameters
-        double alpha = in__.scalar_constrain();
-        double beta = in__.scalar_constrain();
-        double gamma = in__.scalar_constrain();
-        double zeta = in__.scalar_constrain();
-        double eta = in__.scalar_constrain();
+        double muT = in__.scalar_constrain();
+        double betaT1 = in__.scalar_constrain();
+        double muE = in__.scalar_constrain();
+        double betaE1 = in__.scalar_constrain();
+        double betaE2 = in__.scalar_constrain();
         double psi = in__.scalar_constrain();
-        vars__.push_back(alpha);
-        vars__.push_back(beta);
-        vars__.push_back(gamma);
-        vars__.push_back(zeta);
-        vars__.push_back(eta);
+        vars__.push_back(muT);
+        vars__.push_back(betaT1);
+        vars__.push_back(muE);
+        vars__.push_back(betaE1);
+        vars__.push_back(betaE2);
         vars__.push_back(psi);
 
         if (!include_tparams__) return;
@@ -858,37 +858,37 @@ public:
         (void) DUMMY_VAR__;  // suppress unused var warning
 
         try {
-            current_statement_begin__ = 88;
+            current_statement_begin__ = 87;
             validate_non_negative_index("prob_eff", "num_doses", num_doses);
             vector<double> prob_eff(num_doses, 0.0);
             stan::math::initialize(prob_eff, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(prob_eff,DUMMY_VAR__);
-            current_statement_begin__ = 89;
+            current_statement_begin__ = 88;
             validate_non_negative_index("prob_tox", "num_doses", num_doses);
             vector<double> prob_tox(num_doses, 0.0);
             stan::math::initialize(prob_tox, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(prob_tox,DUMMY_VAR__);
-            current_statement_begin__ = 90;
+            current_statement_begin__ = 89;
             validate_non_negative_index("prob_acc_eff", "num_doses", num_doses);
             vector<double> prob_acc_eff(num_doses, 0.0);
             stan::math::initialize(prob_acc_eff, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(prob_acc_eff,DUMMY_VAR__);
-            current_statement_begin__ = 91;
+            current_statement_begin__ = 90;
             validate_non_negative_index("prob_acc_tox", "num_doses", num_doses);
             vector<double> prob_acc_tox(num_doses, 0.0);
             stan::math::initialize(prob_acc_tox, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(prob_acc_tox,DUMMY_VAR__);
-            current_statement_begin__ = 92;
+            current_statement_begin__ = 91;
             validate_non_negative_index("utility", "num_doses", num_doses);
             vector<double> utility(num_doses, 0.0);
             stan::math::initialize(utility, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(utility,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 95;
+            current_statement_begin__ = 94;
             for (int i = 1; i <= num_doses; ++i) {
                 {
-                current_statement_begin__ = 97;
+                current_statement_begin__ = 96;
                 double r_to_the_p(0.0);
                 (void) r_to_the_p;  // dummy to suppress unused var warning
 
@@ -896,43 +896,43 @@ public:
                 stan::math::fill(r_to_the_p,DUMMY_VAR__);
 
 
+                current_statement_begin__ = 97;
+                stan::math::assign(get_base1_lhs(prob_tox,i,"prob_tox",1), inv_logit((muT + (betaT1 * get_base1(coded_doses,i,"coded_doses",1)))));
                 current_statement_begin__ = 98;
-                stan::math::assign(get_base1_lhs(prob_tox,i,"prob_tox",1), inv_logit((alpha + (beta * get_base1(coded_doses,i,"coded_doses",1)))));
+                stan::math::assign(get_base1_lhs(prob_eff,i,"prob_eff",1), inv_logit(((muE + (betaE1 * get_base1(coded_doses,i,"coded_doses",1))) + (betaE2 * get_base1(coded_doses_squ,i,"coded_doses_squ",1)))));
                 current_statement_begin__ = 99;
-                stan::math::assign(get_base1_lhs(prob_eff,i,"prob_eff",1), inv_logit(((gamma + (zeta * get_base1(coded_doses,i,"coded_doses",1))) + (eta * get_base1(coded_doses_squ,i,"coded_doses_squ",1)))));
-                current_statement_begin__ = 100;
                 stan::math::assign(get_base1_lhs(prob_acc_eff,i,"prob_acc_eff",1), int_step((get_base1(prob_eff,i,"prob_eff",1) - efficacy_hurdle)));
-                current_statement_begin__ = 101;
+                current_statement_begin__ = 100;
                 stan::math::assign(get_base1_lhs(prob_acc_tox,i,"prob_acc_tox",1), int_step((toxicity_hurdle - get_base1(prob_tox,i,"prob_tox",1))));
-                current_statement_begin__ = 102;
+                current_statement_begin__ = 101;
                 stan::math::assign(r_to_the_p, (pow(((1 - get_base1(prob_eff,i,"prob_eff",1)) / (1 - eff0)),p) + pow((get_base1(prob_tox,i,"prob_tox",1) / tox1),p)));
-                current_statement_begin__ = 103;
+                current_statement_begin__ = 102;
                 stan::math::assign(get_base1_lhs(utility,i,"utility",1), (1 - pow(r_to_the_p,(1.0 / p))));
                 }
             }
 
             // validate transformed parameters
-            current_statement_begin__ = 88;
+            current_statement_begin__ = 87;
             for (int k0__ = 0; k0__ < num_doses; ++k0__) {
                 check_greater_or_equal(function__,"prob_eff[k0__]",prob_eff[k0__],0);
                 check_less_or_equal(function__,"prob_eff[k0__]",prob_eff[k0__],1);
             }
-            current_statement_begin__ = 89;
+            current_statement_begin__ = 88;
             for (int k0__ = 0; k0__ < num_doses; ++k0__) {
                 check_greater_or_equal(function__,"prob_tox[k0__]",prob_tox[k0__],0);
                 check_less_or_equal(function__,"prob_tox[k0__]",prob_tox[k0__],1);
             }
-            current_statement_begin__ = 90;
+            current_statement_begin__ = 89;
             for (int k0__ = 0; k0__ < num_doses; ++k0__) {
                 check_greater_or_equal(function__,"prob_acc_eff[k0__]",prob_acc_eff[k0__],0);
                 check_less_or_equal(function__,"prob_acc_eff[k0__]",prob_acc_eff[k0__],1);
             }
-            current_statement_begin__ = 91;
+            current_statement_begin__ = 90;
             for (int k0__ = 0; k0__ < num_doses; ++k0__) {
                 check_greater_or_equal(function__,"prob_acc_tox[k0__]",prob_acc_tox[k0__],0);
                 check_less_or_equal(function__,"prob_acc_tox[k0__]",prob_acc_tox[k0__],1);
             }
-            current_statement_begin__ = 92;
+            current_statement_begin__ = 91;
 
             // write transformed parameters
             for (int k_0__ = 0; k_0__ < num_doses; ++k_0__) {
@@ -994,19 +994,19 @@ public:
                                  bool include_gqs__ = true) const {
         std::stringstream param_name_stream__;
         param_name_stream__.str(std::string());
-        param_name_stream__ << "alpha";
+        param_name_stream__ << "muT";
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
-        param_name_stream__ << "beta";
+        param_name_stream__ << "betaT1";
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
-        param_name_stream__ << "gamma";
+        param_name_stream__ << "muE";
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
-        param_name_stream__ << "zeta";
+        param_name_stream__ << "betaE1";
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
-        param_name_stream__ << "eta";
+        param_name_stream__ << "betaE2";
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
         param_name_stream__ << "psi";
@@ -1048,19 +1048,19 @@ public:
                                    bool include_gqs__ = true) const {
         std::stringstream param_name_stream__;
         param_name_stream__.str(std::string());
-        param_name_stream__ << "alpha";
+        param_name_stream__ << "muT";
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
-        param_name_stream__ << "beta";
+        param_name_stream__ << "betaT1";
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
-        param_name_stream__ << "gamma";
+        param_name_stream__ << "muE";
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
-        param_name_stream__ << "zeta";
+        param_name_stream__ << "betaE1";
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
-        param_name_stream__ << "eta";
+        param_name_stream__ << "betaE2";
         param_names__.push_back(param_name_stream__.str());
         param_name_stream__.str(std::string());
         param_name_stream__ << "psi";
