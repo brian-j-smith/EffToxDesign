@@ -27,10 +27,10 @@ This function requires that ggplot2 be installed.
 }
 \examples{
 dat <- efftox_parameters_demo()
-dat$num_patients <- 3
-dat$eff <- c(0, 1, 1)
-dat$tox <- c(0, 0, 1)
-dat$doses <- c(1, 2, 3)
+dat$n <- 3
+dat$yE <- c(0, 1, 1)
+dat$yT <- c(0, 0, 1)
+dat$levels <- c(1, 2, 3)
 fit <- rstan::sampling(stanmodels$EffTox, data = dat)
 efftox_utility_density_plot(fit) + ggplot2::ggtitle('My doses')  # Too busy?
 # Specify subset of doses to make plot less cluttered

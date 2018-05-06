@@ -23,10 +23,10 @@ probability that the utility of dose j exceeds that of dose i.
 }
 \examples{
 dat <- efftox_parameters_demo()
-dat$num_patients <- 3
-dat$eff <- c(0, 1, 1)
-dat$tox <- c(0, 0, 1)
-dat$doses <- c(1, 2, 3)
+dat$n <- 3
+dat$yE <- c(0, 1, 1)
+dat$yT <- c(0, 0, 1)
+dat$levels <- c(1, 2, 3)
 fit <- rstan::sampling(stanmodels$EffTox, data = dat)
 sup_mat <- efftox_superiority(fit)
 

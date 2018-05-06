@@ -32,10 +32,10 @@ dtps1 <- efftox_dtps(dat = dat, cohort_sizes = c(3), next_dose = 1)
 }
 # To calculate future paths in a partially-observed trial
 dat <- efftox_parameters_demo()
-dat$doses = array(c(1,1,1))
-dat$eff = array(c(0,0,0))
-dat$tox = array(c(1,1,1))
-dat$num_patients = 3
+dat$levels = array(c(1,1,1))
+dat$yE = array(c(0,0,0))
+dat$yT = array(c(1,1,1))
+dat$n = 3
 \dontrun{
 dtps2 <- efftox_dtps(dat = dat, cohort_sizes = c(3), next_dose = 1)
 }

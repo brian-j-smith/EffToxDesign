@@ -56,13 +56,13 @@ convenience.
    efficacy-toxicity model. A number.
    \item \code{psi_sd}, The prior standard deviation of the association term in
    the combined efficacy-toxicity model. A number.
-   \item \code{eff}, A vector of efficacy outcomes for patients 1:num_patients,
+   \item \code{yE}, A vector of efficacy outcomes for patients 1:n,
    where 1=efficacy and 0=no efficacy.
-   \item \code{tox}, A vector of toxicity outcomes for patients 1:num_patients,
+   \item \code{yT}, A vector of toxicity outcomes for patients 1:n,
    where 1=toxicity and 0=no toxicity.
-   \item \code{doses}, A vector of dose-levels given to patients 1:num_patients,
+   \item \code{levels}, A vector of dose-levels given to patients 1:n,
    where 1=lowest dose, 2=second dose, etc.
-   \item \code{num_patients}, number of patients, positive integer
+   \item \code{n}, number of patients, positive integer
   }
 
   An example of the efftox_params list is returned by

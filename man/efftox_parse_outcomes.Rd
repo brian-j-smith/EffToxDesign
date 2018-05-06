@@ -11,8 +11,8 @@ efftox_parse_outcomes(outcome_string)
 observed.}
 }
 \value{
-a list with elements \code{eff}, \code{tox}, \code{doses} and
-\code{num_patients}. These elements are congruent with the same in
+a list with elements \code{yE}, \code{yT}, \code{levels} and
+\code{n}. These elements are congruent with the same in
 \code{efftox_params}.
 }
 \description{
@@ -34,9 +34,9 @@ general seamless phase I/II dose-finding scenarios.
 }
 \examples{
 x = efftox_parse_outcomes('1NNE 2EEN 3TBB')
-x$num_patients == 9
-x$eff == c(0, 0, 1, 1, 1, 0, 0, 1, 1)
-sum(x$tox) == 3
+x$n == 9
+x$yE == c(0, 0, 1, 1, 1, 0, 0, 1, 1)
+sum(x$yT) == 3
 
 }
 \references{

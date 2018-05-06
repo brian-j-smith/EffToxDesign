@@ -35,10 +35,10 @@ template <typename T0__, typename T1__, typename T6__, typename T7__, typename T
 typename boost::math::tools::promote_args<T0__, T1__, T6__, T7__, typename boost::math::tools::promote_args<T8__, T9__, T10__, T11__>::type>::type
 log_joint_pdf(const std::vector<T0__>& coded_doses,
                   const std::vector<T1__>& coded_doses_squ,
-                  const int& num_patients,
-                  const std::vector<int>& eff,
-                  const std::vector<int>& tox,
-                  const std::vector<int>& doses,
+                  const int& n,
+                  const std::vector<int>& yE,
+                  const std::vector<int>& yT,
+                  const std::vector<int>& levels,
                   const T6__& muT,
                   const T7__& betaT1,
                   const T8__& muE,
@@ -66,7 +66,7 @@ log_joint_pdf(const std::vector<T0__>& coded_doses,
         current_statement_begin__ = 10;
         stan::math::assign(p, 0);
         current_statement_begin__ = 11;
-        for (int j = 1; j <= num_patients; ++j) {
+        for (int j = 1; j <= n; ++j) {
             {
             current_statement_begin__ = 12;
             fun_scalar_t__ prob_eff;
@@ -89,11 +89,11 @@ log_joint_pdf(const std::vector<T0__>& coded_doses,
 
 
             current_statement_begin__ = 15;
-            stan::math::assign(prob_eff, inv_logit(((muE + (betaE1 * get_base1(coded_doses,get_base1(doses,j,"doses",1),"coded_doses",1))) + (betaE2 * get_base1(coded_doses_squ,get_base1(doses,j,"doses",1),"coded_doses_squ",1)))));
+            stan::math::assign(prob_eff, inv_logit(((muE + (betaE1 * get_base1(coded_doses,get_base1(levels,j,"levels",1),"coded_doses",1))) + (betaE2 * get_base1(coded_doses_squ,get_base1(levels,j,"levels",1),"coded_doses_squ",1)))));
             current_statement_begin__ = 16;
-            stan::math::assign(prob_tox, inv_logit((muT + (betaT1 * get_base1(coded_doses,get_base1(doses,j,"doses",1),"coded_doses",1)))));
+            stan::math::assign(prob_tox, inv_logit((muT + (betaT1 * get_base1(coded_doses,get_base1(levels,j,"levels",1),"coded_doses",1)))));
             current_statement_begin__ = 17;
-            stan::math::assign(p_j, ((((pow(prob_eff,get_base1(eff,j,"eff",1)) * pow((1 - prob_eff),(1 - get_base1(eff,j,"eff",1)))) * pow(prob_tox,get_base1(tox,j,"tox",1))) * pow((1 - prob_tox),(1 - get_base1(tox,j,"tox",1)))) + ((((((pow(-(1),(get_base1(eff,j,"eff",1) + get_base1(tox,j,"tox",1))) * prob_eff) * prob_tox) * (1 - prob_eff)) * (1 - prob_tox)) * (exp(psi) - 1)) / (exp(psi) + 1))));
+            stan::math::assign(p_j, ((((pow(prob_eff,get_base1(yE,j,"yE",1)) * pow((1 - prob_eff),(1 - get_base1(yE,j,"yE",1)))) * pow(prob_tox,get_base1(yT,j,"yT",1))) * pow((1 - prob_tox),(1 - get_base1(yT,j,"yT",1)))) + ((((((pow(-(1),(get_base1(yE,j,"yE",1) + get_base1(yT,j,"yT",1))) * prob_eff) * prob_tox) * (1 - prob_eff)) * (1 - prob_tox)) * (exp(psi) - 1)) / (exp(psi) + 1))));
             current_statement_begin__ = 20;
             stan::math::assign(p, (p + log(p_j)));
             }
@@ -114,17 +114,17 @@ struct log_joint_pdf_functor__ {
         typename boost::math::tools::promote_args<T0__, T1__, T6__, T7__, typename boost::math::tools::promote_args<T8__, T9__, T10__, T11__>::type>::type
     operator()(const std::vector<T0__>& coded_doses,
                   const std::vector<T1__>& coded_doses_squ,
-                  const int& num_patients,
-                  const std::vector<int>& eff,
-                  const std::vector<int>& tox,
-                  const std::vector<int>& doses,
+                  const int& n,
+                  const std::vector<int>& yE,
+                  const std::vector<int>& yT,
+                  const std::vector<int>& levels,
                   const T6__& muT,
                   const T7__& betaT1,
                   const T8__& muE,
                   const T9__& betaE1,
                   const T10__& betaE2,
                   const T11__& psi, std::ostream* pstream__) const {
-        return log_joint_pdf(coded_doses, coded_doses_squ, num_patients, eff, tox, doses, muT, betaT1, muE, betaE1, betaE2, psi, pstream__);
+        return log_joint_pdf(coded_doses, coded_doses_squ, n, yE, yT, levels, muT, betaT1, muE, betaE1, betaE2, psi, pstream__);
     }
 };
 
@@ -149,10 +149,10 @@ private:
     double tox1;
     double efficacy_hurdle;
     double toxicity_hurdle;
-    int num_patients;
-    vector<int> eff;
-    vector<int> tox;
-    vector<int> doses;
+    int n;
+    vector<int> yE;
+    vector<int> yT;
+    vector<int> levels;
     vector<double> coded_doses;
     vector<double> coded_doses_squ;
     double mean_log_dose;
@@ -310,43 +310,43 @@ public:
             pos__ = 0;
             toxicity_hurdle = vals_r__[pos__++];
             current_statement_begin__ = 50;
-            context__.validate_dims("data initialization", "num_patients", "int", context__.to_vec());
-            num_patients = int(0);
-            vals_i__ = context__.vals_i("num_patients");
+            context__.validate_dims("data initialization", "n", "int", context__.to_vec());
+            n = int(0);
+            vals_i__ = context__.vals_i("n");
             pos__ = 0;
-            num_patients = vals_i__[pos__++];
+            n = vals_i__[pos__++];
             current_statement_begin__ = 51;
-            validate_non_negative_index("eff", "num_patients", num_patients);
-            context__.validate_dims("data initialization", "eff", "int", context__.to_vec(num_patients));
-            validate_non_negative_index("eff", "num_patients", num_patients);
-            eff = std::vector<int>(num_patients,int(0));
-            vals_i__ = context__.vals_i("eff");
+            validate_non_negative_index("yE", "n", n);
+            context__.validate_dims("data initialization", "yE", "int", context__.to_vec(n));
+            validate_non_negative_index("yE", "n", n);
+            yE = std::vector<int>(n,int(0));
+            vals_i__ = context__.vals_i("yE");
             pos__ = 0;
-            size_t eff_limit_0__ = num_patients;
-            for (size_t i_0__ = 0; i_0__ < eff_limit_0__; ++i_0__) {
-                eff[i_0__] = vals_i__[pos__++];
+            size_t yE_limit_0__ = n;
+            for (size_t i_0__ = 0; i_0__ < yE_limit_0__; ++i_0__) {
+                yE[i_0__] = vals_i__[pos__++];
             }
             current_statement_begin__ = 52;
-            validate_non_negative_index("tox", "num_patients", num_patients);
-            context__.validate_dims("data initialization", "tox", "int", context__.to_vec(num_patients));
-            validate_non_negative_index("tox", "num_patients", num_patients);
-            tox = std::vector<int>(num_patients,int(0));
-            vals_i__ = context__.vals_i("tox");
+            validate_non_negative_index("yT", "n", n);
+            context__.validate_dims("data initialization", "yT", "int", context__.to_vec(n));
+            validate_non_negative_index("yT", "n", n);
+            yT = std::vector<int>(n,int(0));
+            vals_i__ = context__.vals_i("yT");
             pos__ = 0;
-            size_t tox_limit_0__ = num_patients;
-            for (size_t i_0__ = 0; i_0__ < tox_limit_0__; ++i_0__) {
-                tox[i_0__] = vals_i__[pos__++];
+            size_t yT_limit_0__ = n;
+            for (size_t i_0__ = 0; i_0__ < yT_limit_0__; ++i_0__) {
+                yT[i_0__] = vals_i__[pos__++];
             }
             current_statement_begin__ = 53;
-            validate_non_negative_index("doses", "num_patients", num_patients);
-            context__.validate_dims("data initialization", "doses", "int", context__.to_vec(num_patients));
-            validate_non_negative_index("doses", "num_patients", num_patients);
-            doses = std::vector<int>(num_patients,int(0));
-            vals_i__ = context__.vals_i("doses");
+            validate_non_negative_index("levels", "n", n);
+            context__.validate_dims("data initialization", "levels", "int", context__.to_vec(n));
+            validate_non_negative_index("levels", "n", n);
+            levels = std::vector<int>(n,int(0));
+            vals_i__ = context__.vals_i("levels");
             pos__ = 0;
-            size_t doses_limit_0__ = num_patients;
-            for (size_t i_0__ = 0; i_0__ < doses_limit_0__; ++i_0__) {
-                doses[i_0__] = vals_i__[pos__++];
+            size_t levels_limit_0__ = n;
+            for (size_t i_0__ = 0; i_0__ < levels_limit_0__; ++i_0__) {
+                levels[i_0__] = vals_i__[pos__++];
             }
 
             // validate, data variables
@@ -380,21 +380,21 @@ public:
             current_statement_begin__ = 47;
             current_statement_begin__ = 48;
             current_statement_begin__ = 50;
-            check_greater_or_equal(function__,"num_patients",num_patients,0);
+            check_greater_or_equal(function__,"n",n,0);
             current_statement_begin__ = 51;
-            for (int k0__ = 0; k0__ < num_patients; ++k0__) {
-                check_greater_or_equal(function__,"eff[k0__]",eff[k0__],0);
-                check_less_or_equal(function__,"eff[k0__]",eff[k0__],1);
+            for (int k0__ = 0; k0__ < n; ++k0__) {
+                check_greater_or_equal(function__,"yE[k0__]",yE[k0__],0);
+                check_less_or_equal(function__,"yE[k0__]",yE[k0__],1);
             }
             current_statement_begin__ = 52;
-            for (int k0__ = 0; k0__ < num_patients; ++k0__) {
-                check_greater_or_equal(function__,"tox[k0__]",tox[k0__],0);
-                check_less_or_equal(function__,"tox[k0__]",tox[k0__],1);
+            for (int k0__ = 0; k0__ < n; ++k0__) {
+                check_greater_or_equal(function__,"yT[k0__]",yT[k0__],0);
+                check_less_or_equal(function__,"yT[k0__]",yT[k0__],1);
             }
             current_statement_begin__ = 53;
-            for (int k0__ = 0; k0__ < num_patients; ++k0__) {
-                check_greater_or_equal(function__,"doses[k0__]",doses[k0__],1);
-                check_less_or_equal(function__,"doses[k0__]",doses[k0__],num_doses);
+            for (int k0__ = 0; k0__ < n; ++k0__) {
+                check_greater_or_equal(function__,"levels[k0__]",levels[k0__],1);
+                check_less_or_equal(function__,"levels[k0__]",levels[k0__],num_doses);
             }
             // initialize data variables
             current_statement_begin__ = 60;
@@ -749,7 +749,7 @@ public:
             current_statement_begin__ = 112;
             lp_accum__.add(normal_log(psi,psi_mean,psi_sd));
             current_statement_begin__ = 113;
-            lp_accum__.add(log_joint_pdf(coded_doses,coded_doses_squ,num_patients,eff,tox,doses,muT,betaT1,muE,betaE1,betaE2,psi, pstream__));
+            lp_accum__.add(log_joint_pdf(coded_doses,coded_doses_squ,n,yE,yT,levels,muT,betaT1,muE,betaE1,betaE2,psi, pstream__));
 
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());

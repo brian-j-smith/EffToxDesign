@@ -4,18 +4,18 @@
 
 functions {
   real log_joint_pdf(real[] coded_doses, real[] coded_doses_squ,
-                     int num_patients, int[] eff, int[] tox, int[] doses,
+                     int n, int[] yE, int[] yT, int[] levels,
                      real muT, real betaT1, real muE, real betaE1, real betaE2, real psi) {
     real p;
     p = 0;
-    for(j in 1:num_patients) {
+    for(j in 1:n) {
       real prob_eff;
       real prob_tox;
       real p_j;
-      prob_eff = inv_logit(muE + betaE1 * coded_doses[doses[j]] + betaE2 * coded_doses_squ[doses[j]]);
-      prob_tox = inv_logit(muT + betaT1 * coded_doses[doses[j]]);
-      p_j = prob_eff^eff[j] * (1 - prob_eff)^(1 - eff[j]) * prob_tox^tox[j] *
-              (1 - prob_tox)^(1 - tox[j]) + (-1)^(eff[j] + tox[j]) * prob_eff *
+      prob_eff = inv_logit(muE + betaE1 * coded_doses[levels[j]] + betaE2 * coded_doses_squ[levels[j]]);
+      prob_tox = inv_logit(muT + betaT1 * coded_doses[levels[j]]);
+      p_j = prob_eff^yE[j] * (1 - prob_eff)^(1 - yE[j]) * prob_tox^yT[j] *
+              (1 - prob_tox)^(1 - yT[j]) + (-1)^(yE[j] + yT[j]) * prob_eff *
               prob_tox * (1 - prob_eff) * (1 - prob_tox) * (exp(psi) - 1) / (exp(psi) + 1);
       p = p + log(p_j);
     }
@@ -47,10 +47,10 @@ data {
   real efficacy_hurdle; // A dose is acceptable if prob(eff) exceeds this hurdle...
   real toxicity_hurdle; //  ... and prob(tox) is less than this hurdle
   // Observed trial outcomes
-  int<lower=0> num_patients;
-  int<lower=0, upper=1> eff[num_patients]; // Binary efficacy event for patients j=1,..,num_patients
-  int<lower=0, upper=1> tox[num_patients]; // Binary toxicity event for patients j=1,..,num_patients
-  int<lower=1, upper=num_doses> doses[num_patients];  // Dose-levels given for patients j=1,..,num_patients.
+  int<lower=0> n;
+  int<lower=0, upper=1> yE[n]; // Binary efficacy event for patients j=1,..,n
+  int<lower=0, upper=1> yT[n]; // Binary toxicity event for patients j=1,..,n
+  int<lower=1, upper=num_doses> levels[n];  // Dose-levels given for patients j=1,..,n.
                                    // Dose-levels are 1-based indices of real_doses
                                    // E.g. 1 means 1st dose in real_doses was given
 }
@@ -110,6 +110,6 @@ model {
   target += normal_lpdf(betaE1 | betaE1_mean, betaE1_sd);
   target += normal_lpdf(betaE2 | betaE2_mean, betaE2_sd);
   target += normal_lpdf(psi | psi_mean, psi_sd);
-  target += log_joint_pdf(coded_doses, coded_doses_squ, num_patients, eff, tox, doses,
+  target += log_joint_pdf(coded_doses, coded_doses_squ, n, yE, yT, levels,
                           muT, betaT1, muE, betaE1, betaE2, psi);
 }
