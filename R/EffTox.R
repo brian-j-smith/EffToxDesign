@@ -67,7 +67,7 @@ efftox_solve_p <- function(eff0, tox1, eff_star, tox_star) {
 #' @examples
 #' dat <- efftox_parameters_demo()
 #' names(dat)
-#' dat$real_doses == c(1, 2, 4, 6.6, 10)
+#' dat$doses == c(1, 2, 4, 6.6, 10)
 #'
 #' @seealso
 #' \code{\link{efftox_params}}
@@ -84,8 +84,8 @@ efftox_parameters_demo <- function() {
   tox_star = 0.25
   p = efftox_solve_p(eff0, tox1, eff_star, tox_star)
   x <- list(
-    num_doses = 5,
-    real_doses = c(1, 2, 4, 6.6, 10),
+    K = 5,
+    doses = c(1, 2, 4, 6.6, 10),
     efficacy_hurdle = 0.5,
     toxicity_hurdle = 0.3,
     p_e = 0.1,
@@ -184,7 +184,7 @@ efftox_process <- function(dat, fit) {
   utility = efftox_utility(dat$p, dat$eff0, dat$tox1,
                            prob_eff, prob_tox)
   # Dose admissibility
-  dose_indices <- 1:dat$num_doses
+  dose_indices <- seq(dat$doses)
   lowest <- min(dat$levels)
   highest <- max(dat$levels)
   in_range <- sapply(dose_indices,

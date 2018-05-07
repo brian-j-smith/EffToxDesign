@@ -16,7 +16,7 @@ to demonstrate EffTox in Thall et al. 2014.
 \examples{
 dat <- efftox_parameters_demo()
 names(dat)
-dat$real_doses == c(1, 2, 4, 6.6, 10)
+dat$doses == c(1, 2, 4, 6.6, 10)
 
 }
 \references{

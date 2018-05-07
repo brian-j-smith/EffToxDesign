@@ -142,8 +142,8 @@ private:
     double betaE2_sd;
     double psi_mean;
     double psi_sd;
-    int num_doses;
-    vector<double> real_doses;
+    int K;
+    vector<double> doses;
     double p;
     double eff0;
     double tox1;
@@ -155,7 +155,7 @@ private:
     vector<int> levels;
     vector<double> coded_doses;
     vector<double> coded_doses_squ;
-    double mean_log_dose;
+    double mean_log_doses;
 public:
     model_EffTox(stan::io::var_context& context__,
         std::ostream* pstream__ = 0)
@@ -263,21 +263,21 @@ public:
             pos__ = 0;
             psi_sd = vals_r__[pos__++];
             current_statement_begin__ = 41;
-            context__.validate_dims("data initialization", "num_doses", "int", context__.to_vec());
-            num_doses = int(0);
-            vals_i__ = context__.vals_i("num_doses");
+            context__.validate_dims("data initialization", "K", "int", context__.to_vec());
+            K = int(0);
+            vals_i__ = context__.vals_i("K");
             pos__ = 0;
-            num_doses = vals_i__[pos__++];
+            K = vals_i__[pos__++];
             current_statement_begin__ = 42;
-            validate_non_negative_index("real_doses", "num_doses", num_doses);
-            context__.validate_dims("data initialization", "real_doses", "double", context__.to_vec(num_doses));
-            validate_non_negative_index("real_doses", "num_doses", num_doses);
-            real_doses = std::vector<double>(num_doses,double(0));
-            vals_r__ = context__.vals_r("real_doses");
+            validate_non_negative_index("doses", "K", K);
+            context__.validate_dims("data initialization", "doses", "double", context__.to_vec(K));
+            validate_non_negative_index("doses", "K", K);
+            doses = std::vector<double>(K,double(0));
+            vals_r__ = context__.vals_r("doses");
             pos__ = 0;
-            size_t real_doses_limit_0__ = num_doses;
-            for (size_t i_0__ = 0; i_0__ < real_doses_limit_0__; ++i_0__) {
-                real_doses[i_0__] = vals_r__[pos__++];
+            size_t doses_limit_0__ = K;
+            for (size_t i_0__ = 0; i_0__ < doses_limit_0__; ++i_0__) {
+                doses[i_0__] = vals_r__[pos__++];
             }
             current_statement_begin__ = 43;
             context__.validate_dims("data initialization", "p", "double", context__.to_vec());
@@ -369,10 +369,10 @@ public:
             current_statement_begin__ = 39;
             check_greater_or_equal(function__,"psi_sd",psi_sd,0);
             current_statement_begin__ = 41;
-            check_greater_or_equal(function__,"num_doses",num_doses,1);
+            check_greater_or_equal(function__,"K",K,1);
             current_statement_begin__ = 42;
-            for (int k0__ = 0; k0__ < num_doses; ++k0__) {
-                check_greater_or_equal(function__,"real_doses[k0__]",real_doses[k0__],0);
+            for (int k0__ = 0; k0__ < K; ++k0__) {
+                check_greater_or_equal(function__,"doses[k0__]",doses[k0__],0);
             }
             current_statement_begin__ = 43;
             current_statement_begin__ = 45;
@@ -394,35 +394,35 @@ public:
             current_statement_begin__ = 53;
             for (int k0__ = 0; k0__ < n; ++k0__) {
                 check_greater_or_equal(function__,"levels[k0__]",levels[k0__],1);
-                check_less_or_equal(function__,"levels[k0__]",levels[k0__],num_doses);
+                check_less_or_equal(function__,"levels[k0__]",levels[k0__],K);
             }
             // initialize data variables
             current_statement_begin__ = 60;
-            validate_non_negative_index("coded_doses", "num_doses", num_doses);
-            coded_doses = std::vector<double>(num_doses,double(0));
+            validate_non_negative_index("coded_doses", "K", K);
+            coded_doses = std::vector<double>(K,double(0));
             stan::math::fill(coded_doses,DUMMY_VAR__);
             current_statement_begin__ = 61;
-            validate_non_negative_index("coded_doses_squ", "num_doses", num_doses);
-            coded_doses_squ = std::vector<double>(num_doses,double(0));
+            validate_non_negative_index("coded_doses_squ", "K", K);
+            coded_doses_squ = std::vector<double>(K,double(0));
             stan::math::fill(coded_doses_squ,DUMMY_VAR__);
             current_statement_begin__ = 62;
-            mean_log_dose = double(0);
-            stan::math::fill(mean_log_dose,DUMMY_VAR__);
+            mean_log_doses = double(0);
+            stan::math::fill(mean_log_doses,DUMMY_VAR__);
 
             current_statement_begin__ = 63;
-            stan::math::assign(mean_log_dose, 0.0);
+            stan::math::assign(mean_log_doses, 0.0);
             current_statement_begin__ = 64;
-            for (int i = 1; i <= num_doses; ++i) {
+            for (int i = 1; i <= K; ++i) {
                 current_statement_begin__ = 65;
-                stan::math::assign(mean_log_dose, (mean_log_dose + log(get_base1(real_doses,i,"real_doses",1))));
+                stan::math::assign(mean_log_doses, (mean_log_doses + log(get_base1(doses,i,"doses",1))));
             }
             current_statement_begin__ = 66;
-            stan::math::assign(mean_log_dose, (mean_log_dose / num_doses));
+            stan::math::assign(mean_log_doses, (mean_log_doses / K));
             current_statement_begin__ = 67;
-            for (int i = 1; i <= num_doses; ++i) {
+            for (int i = 1; i <= K; ++i) {
 
                 current_statement_begin__ = 69;
-                stan::math::assign(get_base1_lhs(coded_doses,i,"coded_doses",1), (log(get_base1(real_doses,i,"real_doses",1)) - mean_log_dose));
+                stan::math::assign(get_base1_lhs(coded_doses,i,"coded_doses",1), (log(get_base1(doses,i,"doses",1)) - mean_log_doses));
                 current_statement_begin__ = 70;
                 stan::math::assign(get_base1_lhs(coded_doses_squ,i,"coded_doses_squ",1), pow(get_base1(coded_doses,i,"coded_doses",1),2));
             }
@@ -621,34 +621,34 @@ public:
 
             // transformed parameters
             current_statement_begin__ = 87;
-            validate_non_negative_index("prob_eff", "num_doses", num_doses);
-            vector<T__> prob_eff(num_doses);
+            validate_non_negative_index("prob_eff", "K", K);
+            vector<T__> prob_eff(K);
             stan::math::initialize(prob_eff, DUMMY_VAR__);
             stan::math::fill(prob_eff,DUMMY_VAR__);
             current_statement_begin__ = 88;
-            validate_non_negative_index("prob_tox", "num_doses", num_doses);
-            vector<T__> prob_tox(num_doses);
+            validate_non_negative_index("prob_tox", "K", K);
+            vector<T__> prob_tox(K);
             stan::math::initialize(prob_tox, DUMMY_VAR__);
             stan::math::fill(prob_tox,DUMMY_VAR__);
             current_statement_begin__ = 89;
-            validate_non_negative_index("prob_acc_eff", "num_doses", num_doses);
-            vector<T__> prob_acc_eff(num_doses);
+            validate_non_negative_index("prob_acc_eff", "K", K);
+            vector<T__> prob_acc_eff(K);
             stan::math::initialize(prob_acc_eff, DUMMY_VAR__);
             stan::math::fill(prob_acc_eff,DUMMY_VAR__);
             current_statement_begin__ = 90;
-            validate_non_negative_index("prob_acc_tox", "num_doses", num_doses);
-            vector<T__> prob_acc_tox(num_doses);
+            validate_non_negative_index("prob_acc_tox", "K", K);
+            vector<T__> prob_acc_tox(K);
             stan::math::initialize(prob_acc_tox, DUMMY_VAR__);
             stan::math::fill(prob_acc_tox,DUMMY_VAR__);
             current_statement_begin__ = 91;
-            validate_non_negative_index("utility", "num_doses", num_doses);
-            vector<T__> utility(num_doses);
+            validate_non_negative_index("utility", "K", K);
+            vector<T__> utility(K);
             stan::math::initialize(utility, DUMMY_VAR__);
             stan::math::fill(utility,DUMMY_VAR__);
 
 
             current_statement_begin__ = 94;
-            for (int i = 1; i <= num_doses; ++i) {
+            for (int i = 1; i <= K; ++i) {
                 {
                 current_statement_begin__ = 96;
                 T__ r_to_the_p;
@@ -674,35 +674,35 @@ public:
             }
 
             // validate transformed parameters
-            for (int i0__ = 0; i0__ < num_doses; ++i0__) {
+            for (int i0__ = 0; i0__ < K; ++i0__) {
                 if (stan::math::is_uninitialized(prob_eff[i0__])) {
                     std::stringstream msg__;
                     msg__ << "Undefined transformed parameter: prob_eff" << '[' << i0__ << ']';
                     throw std::runtime_error(msg__.str());
                 }
             }
-            for (int i0__ = 0; i0__ < num_doses; ++i0__) {
+            for (int i0__ = 0; i0__ < K; ++i0__) {
                 if (stan::math::is_uninitialized(prob_tox[i0__])) {
                     std::stringstream msg__;
                     msg__ << "Undefined transformed parameter: prob_tox" << '[' << i0__ << ']';
                     throw std::runtime_error(msg__.str());
                 }
             }
-            for (int i0__ = 0; i0__ < num_doses; ++i0__) {
+            for (int i0__ = 0; i0__ < K; ++i0__) {
                 if (stan::math::is_uninitialized(prob_acc_eff[i0__])) {
                     std::stringstream msg__;
                     msg__ << "Undefined transformed parameter: prob_acc_eff" << '[' << i0__ << ']';
                     throw std::runtime_error(msg__.str());
                 }
             }
-            for (int i0__ = 0; i0__ < num_doses; ++i0__) {
+            for (int i0__ = 0; i0__ < K; ++i0__) {
                 if (stan::math::is_uninitialized(prob_acc_tox[i0__])) {
                     std::stringstream msg__;
                     msg__ << "Undefined transformed parameter: prob_acc_tox" << '[' << i0__ << ']';
                     throw std::runtime_error(msg__.str());
                 }
             }
-            for (int i0__ = 0; i0__ < num_doses; ++i0__) {
+            for (int i0__ = 0; i0__ < K; ++i0__) {
                 if (stan::math::is_uninitialized(utility[i0__])) {
                     std::stringstream msg__;
                     msg__ << "Undefined transformed parameter: utility" << '[' << i0__ << ']';
@@ -713,22 +713,22 @@ public:
             const char* function__ = "validate transformed params";
             (void) function__;  // dummy to suppress unused var warning
             current_statement_begin__ = 87;
-            for (int k0__ = 0; k0__ < num_doses; ++k0__) {
+            for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_eff[k0__]",prob_eff[k0__],0);
                 check_less_or_equal(function__,"prob_eff[k0__]",prob_eff[k0__],1);
             }
             current_statement_begin__ = 88;
-            for (int k0__ = 0; k0__ < num_doses; ++k0__) {
+            for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_tox[k0__]",prob_tox[k0__],0);
                 check_less_or_equal(function__,"prob_tox[k0__]",prob_tox[k0__],1);
             }
             current_statement_begin__ = 89;
-            for (int k0__ = 0; k0__ < num_doses; ++k0__) {
+            for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_acc_eff[k0__]",prob_acc_eff[k0__],0);
                 check_less_or_equal(function__,"prob_acc_eff[k0__]",prob_acc_eff[k0__],1);
             }
             current_statement_begin__ = 90;
-            for (int k0__ = 0; k0__ < num_doses; ++k0__) {
+            for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_acc_tox[k0__]",prob_acc_tox[k0__],0);
                 check_less_or_equal(function__,"prob_acc_tox[k0__]",prob_acc_tox[k0__],1);
             }
@@ -806,19 +806,19 @@ public:
         dims__.resize(0);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(num_doses);
+        dims__.push_back(K);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(num_doses);
+        dims__.push_back(K);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(num_doses);
+        dims__.push_back(K);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(num_doses);
+        dims__.push_back(K);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(num_doses);
+        dims__.push_back(K);
         dimss__.push_back(dims__);
     }
 
@@ -859,34 +859,34 @@ public:
 
         try {
             current_statement_begin__ = 87;
-            validate_non_negative_index("prob_eff", "num_doses", num_doses);
-            vector<double> prob_eff(num_doses, 0.0);
+            validate_non_negative_index("prob_eff", "K", K);
+            vector<double> prob_eff(K, 0.0);
             stan::math::initialize(prob_eff, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(prob_eff,DUMMY_VAR__);
             current_statement_begin__ = 88;
-            validate_non_negative_index("prob_tox", "num_doses", num_doses);
-            vector<double> prob_tox(num_doses, 0.0);
+            validate_non_negative_index("prob_tox", "K", K);
+            vector<double> prob_tox(K, 0.0);
             stan::math::initialize(prob_tox, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(prob_tox,DUMMY_VAR__);
             current_statement_begin__ = 89;
-            validate_non_negative_index("prob_acc_eff", "num_doses", num_doses);
-            vector<double> prob_acc_eff(num_doses, 0.0);
+            validate_non_negative_index("prob_acc_eff", "K", K);
+            vector<double> prob_acc_eff(K, 0.0);
             stan::math::initialize(prob_acc_eff, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(prob_acc_eff,DUMMY_VAR__);
             current_statement_begin__ = 90;
-            validate_non_negative_index("prob_acc_tox", "num_doses", num_doses);
-            vector<double> prob_acc_tox(num_doses, 0.0);
+            validate_non_negative_index("prob_acc_tox", "K", K);
+            vector<double> prob_acc_tox(K, 0.0);
             stan::math::initialize(prob_acc_tox, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(prob_acc_tox,DUMMY_VAR__);
             current_statement_begin__ = 91;
-            validate_non_negative_index("utility", "num_doses", num_doses);
-            vector<double> utility(num_doses, 0.0);
+            validate_non_negative_index("utility", "K", K);
+            vector<double> utility(K, 0.0);
             stan::math::initialize(utility, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(utility,DUMMY_VAR__);
 
 
             current_statement_begin__ = 94;
-            for (int i = 1; i <= num_doses; ++i) {
+            for (int i = 1; i <= K; ++i) {
                 {
                 current_statement_begin__ = 96;
                 double r_to_the_p(0.0);
@@ -913,41 +913,41 @@ public:
 
             // validate transformed parameters
             current_statement_begin__ = 87;
-            for (int k0__ = 0; k0__ < num_doses; ++k0__) {
+            for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_eff[k0__]",prob_eff[k0__],0);
                 check_less_or_equal(function__,"prob_eff[k0__]",prob_eff[k0__],1);
             }
             current_statement_begin__ = 88;
-            for (int k0__ = 0; k0__ < num_doses; ++k0__) {
+            for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_tox[k0__]",prob_tox[k0__],0);
                 check_less_or_equal(function__,"prob_tox[k0__]",prob_tox[k0__],1);
             }
             current_statement_begin__ = 89;
-            for (int k0__ = 0; k0__ < num_doses; ++k0__) {
+            for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_acc_eff[k0__]",prob_acc_eff[k0__],0);
                 check_less_or_equal(function__,"prob_acc_eff[k0__]",prob_acc_eff[k0__],1);
             }
             current_statement_begin__ = 90;
-            for (int k0__ = 0; k0__ < num_doses; ++k0__) {
+            for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_acc_tox[k0__]",prob_acc_tox[k0__],0);
                 check_less_or_equal(function__,"prob_acc_tox[k0__]",prob_acc_tox[k0__],1);
             }
             current_statement_begin__ = 91;
 
             // write transformed parameters
-            for (int k_0__ = 0; k_0__ < num_doses; ++k_0__) {
+            for (int k_0__ = 0; k_0__ < K; ++k_0__) {
             vars__.push_back(prob_eff[k_0__]);
             }
-            for (int k_0__ = 0; k_0__ < num_doses; ++k_0__) {
+            for (int k_0__ = 0; k_0__ < K; ++k_0__) {
             vars__.push_back(prob_tox[k_0__]);
             }
-            for (int k_0__ = 0; k_0__ < num_doses; ++k_0__) {
+            for (int k_0__ = 0; k_0__ < K; ++k_0__) {
             vars__.push_back(prob_acc_eff[k_0__]);
             }
-            for (int k_0__ = 0; k_0__ < num_doses; ++k_0__) {
+            for (int k_0__ = 0; k_0__ < K; ++k_0__) {
             vars__.push_back(prob_acc_tox[k_0__]);
             }
-            for (int k_0__ = 0; k_0__ < num_doses; ++k_0__) {
+            for (int k_0__ = 0; k_0__ < K; ++k_0__) {
             vars__.push_back(utility[k_0__]);
             }
 
@@ -1013,27 +1013,27 @@ public:
         param_names__.push_back(param_name_stream__.str());
 
         if (!include_gqs__ && !include_tparams__) return;
-        for (int k_0__ = 1; k_0__ <= num_doses; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= K; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "prob_eff" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
-        for (int k_0__ = 1; k_0__ <= num_doses; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= K; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "prob_tox" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
-        for (int k_0__ = 1; k_0__ <= num_doses; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= K; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "prob_acc_eff" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
-        for (int k_0__ = 1; k_0__ <= num_doses; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= K; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "prob_acc_tox" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
-        for (int k_0__ = 1; k_0__ <= num_doses; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= K; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "utility" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
@@ -1067,27 +1067,27 @@ public:
         param_names__.push_back(param_name_stream__.str());
 
         if (!include_gqs__ && !include_tparams__) return;
-        for (int k_0__ = 1; k_0__ <= num_doses; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= K; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "prob_eff" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
-        for (int k_0__ = 1; k_0__ <= num_doses; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= K; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "prob_tox" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
-        for (int k_0__ = 1; k_0__ <= num_doses; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= K; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "prob_acc_eff" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
-        for (int k_0__ = 1; k_0__ <= num_doses; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= K; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "prob_acc_tox" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
         }
-        for (int k_0__ = 1; k_0__ <= num_doses; ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= K; ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "utility" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());

@@ -38,8 +38,8 @@ data {
   real psi_mean;
   real<lower=0> psi_sd;
   // Fixed trial parameters
-  int<lower=1> num_doses;
-  real<lower=0> real_doses[num_doses]; // Doses under investigation, e.g. 10, 20, 30 for 10mg, 20mg, 30mg
+  int<lower=1> K;
+  real<lower=0> doses[K]; // Doses under investigation, e.g. 10, 20, 30 for 10mg, 20mg, 30mg
   real p;  // The p of the L^p norm used to model the efficacy-toxicity indifference contours.
            // See Efficacy-Toxicity trade-offs based on L-p norms: Technical Report UTMDABTR-003-06
   real eff0; // Minimum required Pr(Efficacy) when Pr(Toxicity) = 0
@@ -50,23 +50,23 @@ data {
   int<lower=0> n;
   int<lower=0, upper=1> yE[n]; // Binary efficacy event for patients j=1,..,n
   int<lower=0, upper=1> yT[n]; // Binary toxicity event for patients j=1,..,n
-  int<lower=1, upper=num_doses> levels[n];  // Dose-levels given for patients j=1,..,n.
+  int<lower=1, upper=K> levels[n];  // Dose-levels given for patients j=1,..,n.
                                    // Dose-levels are 1-based indices of real_doses
                                    // E.g. 1 means 1st dose in real_doses was given
 }
 
 transformed data {
   // Thall & Cook transform the actual doses by logging and centralising:
-  real coded_doses[num_doses];
-  real coded_doses_squ[num_doses]; // The square of coded_doses
-  real mean_log_dose; // Variable created for convenience
-  mean_log_dose = 0.0;
-  for(i in 1:num_doses)
-    mean_log_dose = mean_log_dose + log(real_doses[i]);
-  mean_log_dose = mean_log_dose / num_doses;
-  for(i in 1:num_doses)
+  real coded_doses[K];
+  real coded_doses_squ[K]; // The square of coded_doses
+  real mean_log_doses; // Variable created for convenience
+  mean_log_doses = 0.0;
+  for(i in 1:K)
+    mean_log_doses = mean_log_doses + log(doses[i]);
+  mean_log_doses = mean_log_doses / K;
+  for(i in 1:K)
   {
-    coded_doses[i] = log(real_doses[i]) - mean_log_dose;
+    coded_doses[i] = log(doses[i]) - mean_log_doses;
     coded_doses_squ[i] = coded_doses[i]^2;
   }
 }
@@ -84,14 +84,14 @@ parameters {
 }
 
 transformed parameters {
-  real<lower=0, upper=1> prob_eff[num_doses]; // Posterior probability of efficacy at doses i=1,...,num_doses
-  real<lower=0, upper=1> prob_tox[num_doses]; // Posterior probability of toxicity at doses i=1,...,num_doses
-  real<lower=0, upper=1> prob_acc_eff[num_doses]; // Probability efficacy is acceptable at doses i=1,...,num_doses
-  real<lower=0, upper=1> prob_acc_tox[num_doses]; // Probability toxicity is acceptable at doses i=1,...,num_doses
-  real utility[num_doses]; // Posterior utility of doses i=1,...,num_doses
+  real<lower=0, upper=1> prob_eff[K]; // Posterior probability of efficacy at doses i=1,...,K
+  real<lower=0, upper=1> prob_tox[K]; // Posterior probability of toxicity at doses i=1,...,K
+  real<lower=0, upper=1> prob_acc_eff[K]; // Probability efficacy is acceptable at doses i=1,...,K
+  real<lower=0, upper=1> prob_acc_tox[K]; // Probability toxicity is acceptable at doses i=1,...,K
+  real utility[K]; // Posterior utility of doses i=1,...,K
   // Calculate the utility of each dose using the method described in
   // "Efficacy-Toxicity trade-offs based on L-p norms: Technical Report UTMDABTR-003-06", John Cook
-  for(i in 1:num_doses)
+  for(i in 1:K)
   {
     real r_to_the_p; // Convenience variable, as in (2) of Cook.
     prob_tox[i] = inv_logit(muT + betaT1 * coded_doses[i]);

@@ -7,8 +7,8 @@ convenience.
 }
 \details{The list object has the following elements:
   \itemize{
-   \item \code{num_doses}, an integer.
-   \item \code{real_doses}, a vector of numbers.The doses under investigation.
+   \item \code{K}, an integer.
+   \item \code{doses}, a vector of numbers.The doses under investigation.
    They should be ordered from lowest to highest and be in consistent units.
    E.g., to conduct a dose-finding trial of doses 10mg, 20mg and 50mg, use
    c(10, 20, 50).
