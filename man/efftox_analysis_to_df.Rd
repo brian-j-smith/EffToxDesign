@@ -17,13 +17,13 @@ Convenient function to turn an \code{\link{efftox_analysis}}
 into a \code{data.frame}.
 }
 \examples{
-dat <- efftox_parameters_demo()
-dat$n <- 3
-dat$yE <- c(0, 1, 1)
-dat$yT <- c(0, 0, 1)
-dat$levels <- c(1, 2, 3)
-fit <- rstan::sampling(stanmodels$EffTox, data = dat)
-decision <- efftox_process(dat, fit)
+design <- efftox_parameters_demo()
+design$n <- 3
+design$yE <- c(0, 1, 1)
+design$yT <- c(0, 0, 1)
+design$levels <- c(1, 2, 3)
+fit <- rstan::sampling(stanmodels$EffTox, data = as.list(design))
+decision <- efftox_process(design, fit)
 df <- efftox_analysis_to_df(decision)
 round(df$Utility, 2) == c(-0.64, 0.04, 0.24, -0.05, -0.19)
 

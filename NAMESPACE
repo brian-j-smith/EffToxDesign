@@ -1,4 +1,8 @@
+export(EffToxDesign)
+export(EffToxSim)
 export(efftox_solve_p)
+export(efftox_theta)
+
 export(efftox_parameters_demo)
 export(efftox_utility)
 export(efftox_process)
@@ -15,6 +19,13 @@ export(stanmodels)
 
 useDynLib(EffToxDesign, .registration = TRUE)
 
-import(Rcpp)
 import(methods)
+import(R6)
+import(Rcpp)
 import(rstantools)
+
+importFrom(coda, as.mcmc, as.mcmc.list, gelman.diag)
+importFrom(foreach, foreach, "%dopar%")
+importFrom(logitnorm, momentsLogitnorm)
+importFrom(rstan, sampling, extract)
+importFrom(truncnorm, etruncnorm, vtruncnorm)

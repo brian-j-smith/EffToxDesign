@@ -4,11 +4,11 @@
 \alias{efftox_contour_plot}
 \title{Plot EffTox utility contours}
 \usage{
-efftox_contour_plot(dat, use_ggplot = FALSE, prob_eff = NULL,
+efftox_contour_plot(design, use_ggplot = FALSE, prob_eff = NULL,
   prob_tox = NULL, num_points = 1000, util_vals = seq(-3, 3, by = 0.2))
 }
 \arguments{
-\item{dat}{An instance of \code{\link{efftox_params}}, a list of EffTox
+\item{design}{An instance of \code{\link{efftox_params}}, a list of EffTox
 parameters. An example is yielded by \code{\link{efftox_parameters_demo}}.}
 
 \item{use_ggplot}{logical, TRUE to use ggplot2. Defaults to FALSE to use
@@ -43,19 +43,19 @@ Prob(Efficacy) vs Prob(Toxicity) points can be added; these are shown as
 red numerals, enumerated in the order provided.
 }
 \examples{
-dat <- efftox_parameters_demo()
-efftox_contour_plot(dat)
+design <- efftox_parameters_demo()
+efftox_contour_plot(design)
 # Add posterior beliefs
-dat$n <- 3
-dat$yE <- c(0, 1, 1)
-dat$yT <- c(0, 0, 1)
-dat$levels <- c(1, 2, 3)
-fit <- rstan::sampling(stanmodels$EffTox, data = dat)
-decision <- efftox_process(dat, fit)
-efftox_contour_plot(dat, prob_eff = decision$prob_eff, prob_tox = decision$prob_tox)
+design$n <- 3
+design$yE <- c(0, 1, 1)
+design$yT <- c(0, 0, 1)
+design$levels <- c(1, 2, 3)
+fit <- rstan::sampling(stanmodels$EffTox, data = as.list(design))
+decision <- efftox_process(design, fit)
+efftox_contour_plot(design, prob_eff = decision$prob_eff, prob_tox = decision$prob_tox)
 title('EffTox utility contours')
 # The same with ggplot2
-efftox_contour_plot(dat, prob_eff = decision$prob_eff, prob_tox = decision$prob_tox,
+efftox_contour_plot(design, prob_eff = decision$prob_eff, prob_tox = decision$prob_tox,
                     use_ggplot = TRUE) +
                     ggplot2::ggtitle('EffTox utility contours')
 

@@ -8,7 +8,7 @@ efftox_utility_density_plot(fit, doses = NULL)
 }
 \arguments{
 \item{fit}{An instance of \code{rstan::stanmodel}, derived by sampling an
-EffTox model. Use \code{stan::sampling(stanmodels$EffTox, data = dat)}.}
+EffTox model.}
 
 \item{doses}{optional, vector of integer dose-levels to plot. E.g. to plot
 only dose-levels 1, 2 & 3 (and suppress the plotting of any other doses), use
@@ -26,12 +26,12 @@ requires ggplot2 be installed.
 This function requires that ggplot2 be installed.
 }
 \examples{
-dat <- efftox_parameters_demo()
-dat$n <- 3
-dat$yE <- c(0, 1, 1)
-dat$yT <- c(0, 0, 1)
-dat$levels <- c(1, 2, 3)
-fit <- rstan::sampling(stanmodels$EffTox, data = dat)
+design <- efftox_parameters_demo()
+design$n <- 3
+design$yE <- c(0, 1, 1)
+design$yT <- c(0, 0, 1)
+design$levels <- c(1, 2, 3)
+fit <- rstan::sampling(stanmodels$EffTox, data = as.list(design))
 efftox_utility_density_plot(fit) + ggplot2::ggtitle('My doses')  # Too busy?
 # Specify subset of doses to make plot less cluttered
 efftox_utility_density_plot(fit, doses = 1:3) + ggplot2::ggtitle('My doses')

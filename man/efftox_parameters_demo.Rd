@@ -14,9 +14,9 @@ Get parameters to run the EffTox demo. These match those used
 to demonstrate EffTox in Thall et al. 2014.
 }
 \examples{
-dat <- efftox_parameters_demo()
-names(dat)
-dat$doses == c(1, 2, 4, 6.6, 10)
+design <- efftox_parameters_demo()
+names(design)
+design$doses == c(1, 2, 4, 6.6, 10)
 
 }
 \references{

@@ -4,10 +4,10 @@
 \alias{efftox_dtps}
 \title{Calculate dose-transition pathways for an EffTox study}
 \usage{
-efftox_dtps(dat, cohort_sizes, next_dose, ...)
+efftox_dtps(design, cohort_sizes, next_dose, ...)
 }
 \arguments{
-\item{dat}{An instance of \code{\link{efftox_params}}, a list of EffTox
+\item{design}{An instance of \code{\link{efftox_params}}, a list of EffTox
 parameters. An example is yielded by \code{\link{efftox_parameters_demo}}.}
 
 \item{cohort_sizes}{vector of future cohort sizes, i.e. positive integers.
@@ -26,18 +26,18 @@ Calculate dose-transition pathways for an EffTox study.
 }
 \examples{
 # Calculate the paths for the first cohort of 3 in Thall et al 2014 example
-dat <- efftox_parameters_demo()
+design <- efftox_parameters_demo()
 \dontrun{
-dtps1 <- efftox_dtps(dat = dat, cohort_sizes = c(3), next_dose = 1)
+dtps1 <- efftox_dtps(design = design, cohort_sizes = c(3), next_dose = 1)
 }
 # To calculate future paths in a partially-observed trial
-dat <- efftox_parameters_demo()
-dat$levels = array(c(1,1,1))
-dat$yE = array(c(0,0,0))
-dat$yT = array(c(1,1,1))
-dat$n = 3
+design <- efftox_parameters_demo()
+design$levels = array(c(1,1,1))
+design$yE = array(c(0,0,0))
+design$yT = array(c(1,1,1))
+design$n = 3
 \dontrun{
-dtps2 <- efftox_dtps(dat = dat, cohort_sizes = c(3), next_dose = 1)
+dtps2 <- efftox_dtps(design = design, cohort_sizes = c(3), next_dose = 1)
 }
 
 }

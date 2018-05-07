@@ -4,14 +4,14 @@
 \alias{efftox_process}
 \title{Process RStan samples from an EffTox model}
 \usage{
-efftox_process(dat, fit)
+efftox_process(design, fit)
 }
 \arguments{
-\item{dat}{An instance of \code{\link{efftox_params}}, a list of EffTox
+\item{design}{An instance of \code{\link{efftox_params}}, a list of EffTox
 parameters. An example is yielded by \code{\link{efftox_parameters_demo}}.}
 
 \item{fit}{An instance of \code{rstan::stanmodel}, derived by sampling an
-EffTox model. Use \code{stan::sampling(stanmodels$EffTox, data = dat)}.}
+EffTox model.}
 }
 \value{
 An instance of \code{\link{efftox_analysis}}.
@@ -22,13 +22,13 @@ about dose-acceptability, dose-utility and which dose should be recommended
 next.
 }
 \examples{
-dat <- efftox_parameters_demo()
-dat$n <- 3
-dat$yE <- c(0, 1, 1)
-dat$yT <- c(0, 0, 1)
-dat$levels <- c(1, 2, 3)
-fit <- rstan::sampling(stanmodels$EffTox, data = dat)
-decision <- efftox_process(dat, fit)
+design <- efftox_parameters_demo()
+design$n <- 3
+design$yE <- c(0, 1, 1)
+design$yT <- c(0, 0, 1)
+design$levels <- c(1, 2, 3)
+fit <- rstan::sampling(stanmodels$EffTox, data = as.list(design))
+decision <- efftox_process(design, fit)
 decision$recommended_dose == 3
 }
 \seealso{

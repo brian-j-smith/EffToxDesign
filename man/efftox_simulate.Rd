@@ -4,11 +4,11 @@
 \alias{efftox_simulate}
 \title{Run EffTox simulations}
 \usage{
-efftox_simulate(dat, num_sims, first_dose, true_eff, true_tox, cohort_sizes,
+efftox_simulate(design, num_sims, first_dose, true_eff, true_tox, cohort_sizes,
   ...)
 }
 \arguments{
-\item{dat}{An instance of \code{\link{efftox_params}}, a list of EffTox
+\item{design}{An instance of \code{\link{efftox_params}}, a list of EffTox
 parameters. An example is yielded by \code{\link{efftox_parameters_demo}}.}
 
 \item{num_sims}{integer, number of simulated iterations}
@@ -43,11 +43,11 @@ A list with named elements \code{recommended_dose},
 Run EffTox simulations for assumed true efficacy and toxicity
 }
 \examples{
-dat <- efftox_parameters_demo()
+design <- efftox_parameters_demo()
 set.seed(123)
 # Let's say we want to use only 2 chains. Extra args are passed to stan
 \dontrun{
-sims <- efftox_simulate(dat, num_sims = 10, first_dose = 1,
+sims <- efftox_simulate(design, num_sims = 10, first_dose = 1,
                         true_eff = c(0.20, 0.40, 0.60, 0.80, 0.90),
                         true_tox = c(0.05, 0.10, 0.15, 0.20, 0.40),
                         cohort_sizes = rep(3, 13),
