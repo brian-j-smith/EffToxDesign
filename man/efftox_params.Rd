@@ -12,25 +12,25 @@ convenience.
    They should be ordered from lowest to highest and be in consistent units.
    E.g., to conduct a dose-finding trial of doses 10mg, 20mg and 50mg, use
    c(10, 20, 50).
-   \item \code{efficacy_hurdle}, acceptable doses should have efficacy
+   \item \code{piE}, acceptable doses should have efficacy
    probability exceeding this value, a number between 0 and 1.
-   \item \code{toxicity hurdle}, acceptable doses should have toxicity
+   \item \code{piT}, acceptable doses should have toxicity
    probability less than this value, a number between zero and 1.
-   \item \code{p_e}, certainty required to infer a dose is acceptable with
+   \item \code{pEL}, certainty required to infer a dose is acceptable with
    regards to being probably efficacious; a number between 0 and 1.
-   \item \code{p_t}, certainty required to infer a dose is acceptable with
+   \item \code{pTL}, certainty required to infer a dose is acceptable with
    regards to being probably tolerable; a number between 0 and 1.
    \item \code{p}, the p-index of EffTox utility contours.
    Use \code{efftox_solve_p}. A number.
-   \item \code{eff0}, Efficacy probability required when toxicity is impossible;
+   \item \code{pi1E}, Efficacy probability required when toxicity is impossible;
     a number between 0 and 1.
-   \item \code{tox1}, Toxicity probability permitted when efficacy is guaranteed;
+   \item \code{pi2T}, Toxicity probability permitted when efficacy is guaranteed;
     a number between 0 and 1.
-   \item \code{eff_star}, Efficacy probability of a third point on
-   the neutral utility curve that joins (\code{eff0}, 0) to (1, \code{tox1}).
+   \item \code{pi3E}, Efficacy probability of a third point on
+   the neutral utility curve that joins (\code{pi1E}, 0) to (1, \code{pi2T}).
    A number between 0 and 1.
-   \item \code{tox_star}, Toxicity probability of a third point on
-   the neutral utility curve that joins (\code{eff0}, 0) to (1, \code{tox1}).
+   \item \code{pi3T}, Toxicity probability of a third point on
+   the neutral utility curve that joins (\code{pi1E}, 0) to (1, \code{pi2T}).
    A number between 0 and 1.
    \item \code{muT_mean}, The prior mean of the intercept term in the toxicity
    logit model. A number.

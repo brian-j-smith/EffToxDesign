@@ -4,18 +4,18 @@
 \alias{efftox_solve_p}
 \title{Calculate the p-index for EffTox utility contours}
 \usage{
-efftox_solve_p(eff0, tox1, eff_star, tox_star)
+efftox_solve_p(pi1E, pi2T, pi3E, pi3T)
 }
 \arguments{
-\item{eff0}{Efficacy probability required when toxicity is impossible;
+\item{pi1E}{Efficacy probability required when toxicity is impossible;
 a number between 0 and 1}
 
-\item{tox1}{Toxicity probability permitted when efficacy is guaranteed;
+\item{pi2T}{Toxicity probability permitted when efficacy is guaranteed;
 a number between 0 and 1}
 
-\item{eff_star}{Efficacy probability of an equi-utility third point}
+\item{pi3E}{Efficacy probability of an equi-utility third point}
 
-\item{tox_star}{Toxicity probability of an equi-utility third point}
+\item{pi3T}{Toxicity probability of an equi-utility third point}
 }
 \value{
 The p-index
@@ -24,7 +24,7 @@ The p-index
 Calculate the p-index for EffTox utility contours so that the neutral utility
 contour intersects the following points in the
 Prob(Efficacy) - Prob(Toxicity) plane:
-(\code{eff0}, 0), (1, \code{tox1}) and (\code{eff_star}, \code{tox_star})
+(\code{pi1E}, 0), (1, \code{pi2T}) and (\code{pi3E}, \code{pi3T})
 }
 \examples{
 efftox_solve_p(0.5, 0.65, 0.7, 0.25)

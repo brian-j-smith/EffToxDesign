@@ -4,15 +4,15 @@
 \alias{efftox_utility}
 \title{Get the utility of efficacy & toxicity probability pairs}
 \usage{
-efftox_utility(p, eff0, tox1, prob_eff, prob_tox)
+efftox_utility(p, pi1E, pi2T, prob_eff, prob_tox)
 }
 \arguments{
 \item{p}{p-index of EffTox utility contours. Use \code{efftox_solve_p}}
 
-\item{eff0}{Efficacy probability required when toxicity is impossible;
+\item{pi1E}{Efficacy probability required when toxicity is impossible;
 a number between 0 and 1}
 
-\item{tox1}{Toxicity probability permitted when efficacy is guaranteed;
+\item{pi2T}{Toxicity probability permitted when efficacy is guaranteed;
 a number between 0 and 1}
 
 \item{prob_eff}{Probability of efficacy; number between 0 and 1}

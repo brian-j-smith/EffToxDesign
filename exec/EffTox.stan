@@ -42,10 +42,10 @@ data {
   real<lower=0> doses[K]; // Doses under investigation, e.g. 10, 20, 30 for 10mg, 20mg, 30mg
   real p;  // The p of the L^p norm used to model the efficacy-toxicity indifference contours.
            // See Efficacy-Toxicity trade-offs based on L-p norms: Technical Report UTMDABTR-003-06
-  real eff0; // Minimum required Pr(Efficacy) when Pr(Toxicity) = 0
-  real tox1; // Maximum permissable Pr(Toxicity) when Pr(Efficacy) = 1
-  real efficacy_hurdle; // A dose is acceptable if prob(eff) exceeds this hurdle...
-  real toxicity_hurdle; //  ... and prob(tox) is less than this hurdle
+  real pi1E; // Minimum required Pr(Efficacy) when Pr(Toxicity) = 0
+  real pi2T; // Maximum permissable Pr(Toxicity) when Pr(Efficacy) = 1
+  real piE; // A dose is acceptable if prob(eff) exceeds this hurdle...
+  real piT; //  ... and prob(tox) is less than this hurdle
   // Observed trial outcomes
   int<lower=0> n;
   int<lower=0, upper=1> yE[n]; // Binary efficacy event for patients j=1,..,n
@@ -96,9 +96,9 @@ transformed parameters {
     real r_to_the_p; // Convenience variable, as in (2) of Cook.
     prob_tox[i] = inv_logit(muT + betaT1 * coded_doses[i]);
     prob_eff[i] = inv_logit(muE + betaE1 * coded_doses[i] + betaE2 * coded_doses_squ[i]);
-    prob_acc_eff[i] = int_step(prob_eff[i] - efficacy_hurdle);
-    prob_acc_tox[i] = int_step(toxicity_hurdle - prob_tox[i]);
-    r_to_the_p = ((1 - prob_eff[i]) / (1 - eff0))^p + (prob_tox[i] / tox1)^p;
+    prob_acc_eff[i] = int_step(prob_eff[i] - piE);
+    prob_acc_tox[i] = int_step(piT - prob_tox[i]);
+    r_to_the_p = ((1 - prob_eff[i]) / (1 - pi1E))^p + (prob_tox[i] / pi2T)^p;
     utility[i] = 1 - r_to_the_p ^ (1.0/p);
   }
 }

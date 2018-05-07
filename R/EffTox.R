@@ -21,14 +21,14 @@
 #' Calculate the p-index for EffTox utility contours so that the neutral utility
 #' contour intersects the following points in the
 #' Prob(Efficacy) - Prob(Toxicity) plane:
-#' (\code{eff0}, 0), (1, \code{tox1}) and (\code{eff_star}, \code{tox_star})
+#' (\code{pi1E}, 0), (1, \code{pi2T}) and (\code{pi3E}, \code{pi3T})
 #'
-#' @param eff0 Efficacy probability required when toxicity is impossible;
+#' @param pi1E Efficacy probability required when toxicity is impossible;
 #' a number between 0 and 1
-#' @param tox1 Toxicity probability permitted when efficacy is guaranteed;
+#' @param pi2T Toxicity probability permitted when efficacy is guaranteed;
 #' a number between 0 and 1
-#' @param eff_star Efficacy probability of an equi-utility third point
-#' @param tox_star Toxicity probability of an equi-utility third point
+#' @param pi3E Efficacy probability of an equi-utility third point
+#' @param pi3T Toxicity probability of an equi-utility third point
 #'
 #' @return The p-index
 #' @export
@@ -39,19 +39,19 @@
 #' @references Thall, Herrick, Nguyen, Venier & Norris. 2014, Effective sample
 #' size for computing prior hyperparameters in Bayesian phase I-II dose-finding
 #'
-efftox_solve_p <- function(eff0, tox1, eff_star, tox_star) {
+efftox_solve_p <- function(pi1E, pi2T, pi3E, pi3T) {
   # Calculate p for the efficacy/toxicity contours that will intersect points
-  # (eff0, 0), (eff.star, tox.star), and (1, tox1)
+  # (pi1E, 0), (eff.star, tox.star), and (1, pi2T)
   
-  .objective = function(p, eff0, tox1, eff_star, tox_star) {
-    a <- ((1 - eff_star) / (1 - eff0))
-    b <- tox_star / tox1
+  .objective = function(p, pi1E, pi2T, pi3E, pi3T) {
+    a <- ((1 - pi3E) / (1 - pi1E))
+    b <- pi3T / pi2T
     return(a^p + b^p - 1)
   }
   
   rt <- stats::uniroot(.objective, interval = c(0, 100),
-                       eff0 = eff0, tox1 = tox1, eff_star = eff_star,
-                       tox_star = tox_star)
+                       pi1E = pi1E, pi2T = pi2T, pi3E = pi3E,
+                       pi3T = pi3T)
   return(rt$root)
 }
 
@@ -78,23 +78,23 @@ efftox_solve_p <- function(eff0, tox1, eff_star, tox_star) {
 efftox_parameters_demo <- function() {
   # Demonstration from 'Effective sample size for computing prior
   # hyperparameters in Bayesian phase I-II dose-finding', Thall et al., 2014
-  eff0 = 0.5
-  tox1 = 0.65
-  eff_star = 0.7
-  tox_star = 0.25
-  p = efftox_solve_p(eff0, tox1, eff_star, tox_star)
+  pi1E = 0.5
+  pi2T = 0.65
+  pi3E = 0.7
+  pi3T = 0.25
+  p = efftox_solve_p(pi1E, pi2T, pi3E, pi3T)
   x <- list(
     K = 5,
     doses = c(1, 2, 4, 6.6, 10),
-    efficacy_hurdle = 0.5,
-    toxicity_hurdle = 0.3,
-    p_e = 0.1,
-    p_t = 0.1,
+    piE = 0.5,
+    piT = 0.3,
+    pEL = 0.1,
+    pTL = 0.1,
     p = p,
-    eff0 = eff0,
-    tox1 = tox1,
-    eff_star = eff_star,
-    tox_star = tox_star,
+    pi1E = pi1E,
+    pi2T = pi2T,
+    pi3E = pi3E,
+    pi3T = pi3T,
     
     muT_mean = -7.9593, muT_sd = 3.5487,
     betaT1_mean = 1.5482, betaT1_sd = 3.5018,
@@ -117,9 +117,9 @@ efftox_parameters_demo <- function() {
 #' @description Get the utility of efficacy & toxicity probability pairs
 #'
 #' @param p p-index of EffTox utility contours. Use \code{efftox_solve_p}
-#' @param eff0 Efficacy probability required when toxicity is impossible;
+#' @param pi1E Efficacy probability required when toxicity is impossible;
 #' a number between 0 and 1
-#' @param tox1 Toxicity probability permitted when efficacy is guaranteed;
+#' @param pi2T Toxicity probability permitted when efficacy is guaranteed;
 #' a number between 0 and 1
 #' @param prob_eff Probability of efficacy; number between 0 and 1
 #' @param prob_tox Probability of toxicity; number between 0 and 1
@@ -138,9 +138,9 @@ efftox_parameters_demo <- function() {
 #'
 #' @seealso \code{\link{efftox_solve_p}}
 #'
-efftox_utility <- function(p, eff0, tox1, prob_eff, prob_tox) {
-  a <- ((1 - prob_eff) / (1 - eff0))
-  b <- prob_tox / tox1
+efftox_utility <- function(p, pi1E, pi2T, prob_eff, prob_tox) {
+  a <- ((1 - prob_eff) / (1 - pi1E))
+  b <- prob_tox / pi2T
   r = (a^p + b^p) ^ (1/p)
   return(1 - r)
 }
@@ -181,7 +181,7 @@ efftox_process <- function(dat, fit) {
   prob_acc_tox <- colMeans(rstan::extract(fit, 'prob_acc_tox')[[1]])
   post_utility <- colMeans(rstan::extract(fit, 'utility')[[1]])
   # Derived quantities
-  utility = efftox_utility(dat$p, dat$eff0, dat$tox1,
+  utility = efftox_utility(dat$p, dat$pi1E, dat$pi2T,
                            prob_eff, prob_tox)
   # Dose admissibility
   dose_indices <- seq(dat$doses)
@@ -189,7 +189,7 @@ efftox_process <- function(dat, fit) {
   highest <- max(dat$levels)
   in_range <- sapply(dose_indices,
                      function(x) (x >= lowest - 1) & (x <= highest + 1))
-  acceptable <- (prob_acc_eff > dat$p_e) & (prob_acc_tox > dat$p_t) & in_range
+  acceptable <- (prob_acc_eff > dat$pEL) & (prob_acc_tox > dat$pTL) & in_range
   if(sum(acceptable) > 0) {
     recommended_dose <- which.max(ifelse(acceptable, utility, NA))  # 2
   } else {
@@ -337,9 +337,9 @@ efftox_simulate <- function(dat, num_sims, first_dose, true_eff, true_tox,
 #' @param eff Probability of efficacy; number between 0 and 1
 #' @param util Utility score; number
 #' @param p p-index of EffTox utility contours. Use \code{efftox_solve_p}
-#' @param eff0 Efficacy probability required when toxicity is impossible;
+#' @param pi1E Efficacy probability required when toxicity is impossible;
 #' a number between 0 and 1
-#' @param tox1 Toxicity probability permitted when efficacy is guaranteed;
+#' @param pi2T Toxicity probability permitted when efficacy is guaranteed;
 #' a number between 0 and 1
 #'
 #' @return Probability(s) of toxicity
@@ -348,26 +348,26 @@ efftox_simulate <- function(dat, num_sims, first_dose, true_eff, true_tox,
 #' @examples
 #' p <- efftox_solve_p(0.5, 0.65, 0.7, 0.25)
 #'
-#' prob_tox <- efftox_get_tox(0.7, 0, p, eff0 = 0.5, tox1 = 0.65)
+#' prob_tox <- efftox_get_tox(0.7, 0, p, pi1E = 0.5, pi2T = 0.65)
 #' round(prob_tox, 2) == 0.25
 #'
-#' prob_tox <- efftox_get_tox(0.7, seq(-0.5, 0.25, by = 0.25), p, eff0 = 0.5, tox1 = 0.65)
+#' prob_tox <- efftox_get_tox(0.7, seq(-0.5, 0.25, by = 0.25), p, pi1E = 0.5, pi2T = 0.65)
 #' round(prob_tox, 2) == c(0.57, 0.41, 0.25, 0.09)
 #'
-#' prob_tox <- efftox_get_tox(c(0.5, 0.7, 0.8), 0.25, p, eff0 = 0.5, tox1 = 0.65)
+#' prob_tox <- efftox_get_tox(c(0.5, 0.7, 0.8), 0.25, p, pi1E = 0.5, pi2T = 0.65)
 #' round(prob_tox, 2) == c(NaN, 0.09, 0.22)
 #'
-#' prob_tox <- efftox_get_tox(c(0.5, 0.7, 0.8), c(-1, 0, 1), p, eff0 = 0.5, tox1 = 0.65)
+#' prob_tox <- efftox_get_tox(c(0.5, 0.7, 0.8), c(-1, 0, 1), p, pi1E = 0.5, pi2T = 0.65)
 #' round(prob_tox, 2) == c(0.63, 0.25, NaN)
 #'
 #' @note Various ways of vectorising the function are demonstrated in the examples
 #'
 #' @seealso \code{\link{efftox_solve_p}}
 #'
-efftox_get_tox <- function(eff, util, p, eff0, tox1) {
+efftox_get_tox <- function(eff, util, p, pi1E, pi2T) {
   
-  a = ((1 - eff) / (1 - eff0))
-  return(tox1 * ((1 - util)^p - a^p)^(1 / p))
+  a = ((1 - eff) / (1 - pi1E))
+  return(pi2T * ((1 - util)^p - a^p)^(1 / p))
 }
 
 
@@ -436,7 +436,7 @@ efftox_contour_plot <- function(dat,
   
   if(use_ggplot) {
     tox_vals = sapply(util_vals, function(u) efftox_get_tox(eff_vals, u, dat$p,
-                                                            dat$eff0, dat$tox1))
+                                                            dat$pi1E, dat$pi2T))
     df = data.frame(eff_vals = rep(eff_vals, times = length(util_vals)),
                     tox_vals = as.numeric(tox_vals),
                     util_vals = rep(util_vals, each = length(eff_vals)))
@@ -448,13 +448,13 @@ efftox_contour_plot <- function(dat,
       ggplot2::xlab('Prob(Efficacy)') + ggplot2::ylab('Prob(Toxicity)')
     
     # Add neutral utility contour
-    tox_vals = efftox_get_tox(eff_vals, 0, dat$p, dat$eff0, dat$tox1)
+    tox_vals = efftox_get_tox(eff_vals, 0, dat$p, dat$pi1E, dat$pi2T)
     df2 = data.frame(eff_vals, tox_vals, util_vals = 0)
     plt <- plt + ggplot2::geom_line(data = df2, size = 1)
     
     # Add hinge points
-    df3 <- data.frame(prob_eff = c(dat$eff0, 1, dat$eff_star),
-                      prob_tox = c(0, dat$tox1, dat$tox_star))
+    df3 <- data.frame(prob_eff = c(dat$pi1E, 1, dat$pi3E),
+                      prob_tox = c(0, dat$pi2T, dat$pi3T))
     plt <- plt + ggplot2::geom_point(data = df3, ggplot2::aes(x = prob_eff,
                                                               y = prob_tox,
                                                               group = 1),
@@ -478,18 +478,18 @@ efftox_contour_plot <- function(dat,
                    xlab = 'Prob(Efficacy)')
     
     for(u in util_vals) {
-      tox_vals = efftox_get_tox(eff_vals, u, dat$p, dat$eff0, dat$tox1)
+      tox_vals = efftox_get_tox(eff_vals, u, dat$p, dat$pi1E, dat$pi2T)
       graphics::points(eff_vals, tox_vals, type = 'l', col = 'grey', lwd = 0.2)
     }
     
     # Add neutral utility contour
-    tox_vals = efftox_get_tox(eff_vals, 0, dat$p, dat$eff0, dat$tox1)
+    tox_vals = efftox_get_tox(eff_vals, 0, dat$p, dat$pi1E, dat$pi2T)
     graphics::points(eff_vals, tox_vals, type = 'l', col = 'black', lwd = 2)
     
     # Add hinge points
-    graphics::points(dat$eff0, 0, col = 'blue', pch = 2)
-    graphics::points(1, dat$tox1, col = 'blue', pch = 2)
-    graphics::points(dat$eff_star, dat$tox_star, col = 'blue', pch = 2)
+    graphics::points(dat$pi1E, 0, col = 'blue', pch = 2)
+    graphics::points(1, dat$pi2T, col = 'blue', pch = 2)
+    graphics::points(dat$pi3E, dat$pi3T, col = 'blue', pch = 2)
     
     # # Add provided eff & tox points
     if(!is.null(prob_eff) & !is.null(prob_tox)) {
