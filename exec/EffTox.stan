@@ -74,7 +74,7 @@ transformed data {
 parameters {
   // Coefficients in toxicity logit model:
   real muT;
-  real betaT1;
+  real<lower=0> betaT1;
   // Coefficients in efficacy logit model:
   real muE;
   real betaE1;

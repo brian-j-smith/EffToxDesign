@@ -488,7 +488,7 @@ public:
         double betaT1(0);
         betaT1 = vals_r__[pos__++];
         try {
-            writer__.scalar_unconstrain(betaT1);
+            writer__.scalar_lb_unconstrain(0,betaT1);
         } catch (const std::exception& e) { 
             throw std::runtime_error(std::string("Error transforming variable betaT1: ") + e.what());
         }
@@ -586,9 +586,9 @@ public:
             T__ betaT1;
             (void) betaT1;  // dummy to suppress unused var warning
             if (jacobian__)
-                betaT1 = in__.scalar_constrain(lp__);
+                betaT1 = in__.scalar_lb_constrain(0,lp__);
             else
-                betaT1 = in__.scalar_constrain();
+                betaT1 = in__.scalar_lb_constrain(0);
 
             T__ muE;
             (void) muE;  // dummy to suppress unused var warning
@@ -836,7 +836,7 @@ public:
         (void) function__;  // dummy to suppress unused var warning
         // read-transform, write parameters
         double muT = in__.scalar_constrain();
-        double betaT1 = in__.scalar_constrain();
+        double betaT1 = in__.scalar_lb_constrain(0);
         double muE = in__.scalar_constrain();
         double betaE1 = in__.scalar_constrain();
         double betaE2 = in__.scalar_constrain();
