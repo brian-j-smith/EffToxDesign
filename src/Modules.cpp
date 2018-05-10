@@ -1,12 +1,14 @@
 #include <Rcpp.h>
-using namespace Rcpp;
+using namespace Rcpp ;
 #include "include/models.hpp"
 
 RCPP_MODULE(stan_fit4EffTox_mod) {
 
+
     class_<rstan::stan_fit<model_EffTox_namespace::model_EffTox, boost::random::ecuyer1988> >("model_EffTox")
 
     .constructor<SEXP,SEXP>()
+
 
     .method("call_sampler", &rstan::stan_fit<model_EffTox_namespace::model_EffTox, boost::random::ecuyer1988> ::call_sampler)
     .method("param_names", &rstan::stan_fit<model_EffTox_namespace::model_EffTox, boost::random::ecuyer1988> ::param_names)
