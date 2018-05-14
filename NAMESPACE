@@ -17,6 +17,9 @@ export(efftox_dtps)
 export(stan_files)
 export(stanmodels)
 
+export(TwoPhaseDesign)
+export(TwoPhaseSim)
+
 useDynLib(EffToxDesign, .registration = TRUE)
 
 import(methods)
@@ -24,6 +27,8 @@ import(R6)
 import(Rcpp)
 import(rstantools)
 
+importFrom(bcrm, threep3)
+importFrom(clinfun, ph2single)
 importFrom(coda, as.mcmc, as.mcmc.list, gelman.diag)
 importFrom(foreach, foreach, "%dopar%")
 importFrom(logitnorm, momentsLogitnorm)
