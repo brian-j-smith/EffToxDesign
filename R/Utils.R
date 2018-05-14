@@ -19,3 +19,15 @@
   modules <- paste0("stan_fit4", names(stanmodels), "_mod")
   for (m in modules) Rcpp::loadModule(m, what = TRUE)
 }
+
+
+.simsummary <- function(eff, tox, selected, given, n_eff, n_tox, n) {
+  x <- rbind("Pr(eff)" = eff,
+             "Pr(tox)" = tox,
+             "selected" = selected,
+             "given" = given,
+             "E(eff)" = n_eff,
+             "E(tox)" = n_tox,
+             "E(n)" = n)
+  cbind(x, "all" = c(NA, NA, rowSums(x[-(1:2), ])))
+}

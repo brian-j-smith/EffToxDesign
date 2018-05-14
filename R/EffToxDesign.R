@@ -240,14 +240,13 @@ EffToxSim <- R6Class("EffToxSim",
       num_sims <- length(self$outcomes)
       doses_selected <- factor(.extract("dose"), self$design$doses)
       doses_given <- factor(.extract("doses_given"), self$design$doses)
-      x <- rbind("Pr(eff)" = self$truth$eff,
-                 "Pr(tox)" = self$truth$tox,
-                 "selected" = table(doses_selected) / num_sims,
-                 "given"    = prop.table(table(doses_given)),
-                 "E(eff)"   = tapply(.extract("yE"), doses_given, sum) / num_sims,
-                 "E(tox)"   = tapply(.extract("yT"), doses_given, sum) / num_sims,
-                 "E(n)"     = table(doses_given) / num_sims)
-      cbind(x, "all" = c(NA, NA, rowSums(x[-(1:2), ])))
+      .simsummary(self$truth$eff,
+                  self$truth$tox,
+                  table(doses_selected) / num_sims,
+                  prop.table(table(doses_given)),
+                  tapply(.extract("yE"), doses_given, sum) / num_sims,
+                  tapply(.extract("yT"), doses_given, sum) / num_sims,
+                  table(doses_given) / num_sims)
     }
   )
 )

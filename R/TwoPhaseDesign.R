@@ -57,15 +57,13 @@ TwoPhaseSim <- R6Class("TwoPhaseSim",
    
    
     summary = function() {
-      outcomes <- self$outcomes
-      x <- rbind("Pr(eff)" = self$truth$eff,
-                 "Pr(tox)" = self$truth$tox,
-                 "selected" = outcomes$stage1_selected * outcomes$stage2_selected,
-                 "given"    = prop.table(outcomes$n_average),
-                 "E(eff)"   = outcomes$n_average * self$truth$eff,
-                 "E(tox)"   = outcomes$n_average * self$truth$tox,
-                 "E(n)"     = outcomes$n_average)
-      cbind(x, "all" = c(NA, NA, rowSums(x[-(1:2), ])))
+      .simsummary(self$truth$eff,
+                  self$truth$tox,
+                  self$outcomes$stage1_selected * self$outcomes$stage2_selected,
+                  prop.table(self$outcomes$n_average),
+                  self$outcomes$n_average * self$truth$eff,
+                  self$outcomes$n_average * self$truth$tox,
+                  self$outcomes$n_average)
     }
   )
 )
