@@ -39,11 +39,11 @@ An \emph{EffToxDesign} object.
 \section{Methods}{
 \describe{
 
-\item{\code{$simulate(true_eff, true_tox)}}{
+\item{\code{$simulate(eff, tox)}}{
 Simulate a two phase I-II trial design.
 \describe{
-\item{\code{true_eff}}{vector of true efficacy rates for the K doses.}
-\item{\code{true_tox}}{vector of true toxicity rates for the K doses.}
+\item{\code{eff}}{vector of true efficacy rates for the K doses.}
+\item{\code{tox}}{vector of true toxicity rates for the K doses.}
 }
 \subsection{Value}{
 An \emph{\link{TwoPhaseSim}} object of simulated trials.
@@ -55,8 +55,8 @@ An \emph{\link{TwoPhaseSim}} object of simulated trials.
 
 \examples{
 design <- TwoPhaseDesign$new(1:5, 0.3, 0.50, 0.10, 0.15)
-sim <- design$simulate(true_eff = c(0.3, 0.375, 0.45, 0.525, 0.6),
-                       true_tox = c(0.1, 0.1, 0.15, 0.2, 0.3))
+sim <- design$simulate(eff = c(0.3, 0.375, 0.45, 0.525, 0.6),
+                       tox = c(0.1, 0.1, 0.15, 0.2, 0.3))
 sim$summary()
 }
 

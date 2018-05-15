@@ -227,9 +227,10 @@ EffToxDesign <- R6Class("EffToxDesign",
     
     
     dtp = function(n = 1, ...) {
-      n0 <- self$n
+      num_keep <- self$n
       next_cohorts <- .nextcohorts(self)
-      level <- next_cohorts$starting_level
+      starting_cohort <- next_cohorts$starting_cohort
+      starting_level <- next_cohorts$starting_level
       next_cohort_sizes <- head(next_cohorts$sizes, n)
       
       # Construct all possible outcome combinations
@@ -246,7 +247,7 @@ EffToxDesign <- R6Class("EffToxDesign",
       cache <- list()
       for(i in 1:nrow(cohort_paths)) {
         dtp <- ""
-        cohort_level <- level
+        cohort_level <- starting_level
         for(j in 1:ncol(cohort_paths)) {
           dtp <- paste0(dtp, " ", cohort_level, cohort_paths[i, j])
           if(dtp %in% names(cache)) {
@@ -258,49 +259,51 @@ EffToxDesign <- R6Class("EffToxDesign",
                      levels = these_outcomes$levels)
             cohort_level <- self$decision(...)$level
             cache[[dtp]] <- cohort_level
-            self$keep(n0)
+            self$keep(num_keep)
           }
           if(length(cohort_level)) levels_given[i, j] <- cohort_level
         }
       }
-      df <- data.frame(L0 = rep(level, nrow(cohort_paths)))
+      df <- data.frame(matrix(nrow = nrow(cohort_paths), ncol = 0))
+      levels <- rep(starting_level, nrow(cohort_paths))
       for(k in 1:ncol(cohort_paths)) {
-        df[, paste0("C", k - 1)] = cohort_paths[, k]
-        df[, paste0("L", k)] = levels_given[, k]
+        df[[paste0("cohort", starting_cohort + k - 1)]] <-
+          ifelse(is.na(levels), NA, paste0(levels, cohort_paths[, k]))
+        levels <- levels_given[, k]
       }
+      df[[paste0("cohort", starting_cohort + k)]] <- levels
       return(df)
     },
     
     
-    simulate = function(num_sims, true_eff, true_tox,
-                        seed = sample.int(.Machine$integer.max, 1),
+    simulate = function(n, eff, tox, seed = sample.int(.Machine$integer.max, 1),
                         mcmcdiag = FALSE, ...) {
       set.seed(seed)
-      seeds <- sample.int(.Machine$integer.max, num_sims)
-      outcomes <- foreach(i = 1:num_sims, .export = "self") %dopar% {
+      seeds <- sample.int(.Machine$integer.max, n)
+      outcomes <- foreach(i = 1:n, .export = "self") %dopar% {
         print(paste("EffToxDesign Trial Simulation", i))
         set.seed(seeds[i])
-        n0 <- self$n
+        num_keep <- self$n
         next_cohorts <- .nextcohorts(self)
-        level <- next_cohorts$starting_level
+        cohort_level <- next_cohorts$starting_level
         next_cohort_sizes <- next_cohorts$sizes
         mpsrf <- NULL
         for(cohort_size in next_cohort_sizes) {
-          yE <- rbinom(cohort_size, 1, true_eff[level])
-          yT <- rbinom(cohort_size, 1, true_tox[level])
-          self$add(yE = yE, yT = yT, levels = rep(level, cohort_size))
+          yE <- rbinom(cohort_size, 1, eff[cohort_level])
+          yT <- rbinom(cohort_size, 1, tox[cohort_level])
+          self$add(yE = yE, yT = yT, levels = rep(cohort_level, cohort_size))
           decision <- self$decision(mcmcdiag = mcmcdiag, ...)
-          level <- decision$level
+          cohort_level <- decision$level
           mpsrf <- c(mpsrf, decision$mpsrf)
-          if(length(level) == 0) break
+          if(length(cohort_level) == 0) break
         }
         outcome <- list(dose = decision$dose, yE = self$yE, yT = self$yT,
                         doses_given = self$doses[self$levels], mpsrf = mpsrf)
-        self$keep(n0)
+        self$keep(num_keep)
         return(outcome)
       }
-      EffToxSim$new(design = self$clone(), true_eff = true_eff,
-                    true_tox = true_tox, outcomes = outcomes)
+      EffToxSim$new(design = self$clone(), eff = eff, tox = tox,
+                    outcomes = outcomes)
     }
   )
 )
@@ -313,9 +316,9 @@ EffToxSim <- R6Class("EffToxSim",
     outcomes = NULL,
    
    
-    initialize = function(design, true_eff, true_tox, outcomes) {
+    initialize = function(design, eff, tox, outcomes) {
       self$design <- design
-      self$truth <- data.frame(eff = true_eff, tox = true_tox)
+      self$truth <- data.frame(eff = eff, tox = tox)
       self$outcomes <- outcomes
       invisible(self)
     },
@@ -327,16 +330,16 @@ EffToxSim <- R6Class("EffToxSim",
         unlist(lapply(self$outcomes, function(outcome) outcome[[name]]))
       }
      
-      num_sims <- length(self$outcomes)
+      n <- length(self$outcomes)
       doses_selected <- factor(.extract("dose"), self$design$doses)
       doses_given <- factor(.extract("doses_given"), self$design$doses)
       .simsummary(self$truth$eff,
                   self$truth$tox,
-                  table(doses_selected) / num_sims,
+                  table(doses_selected) / n,
                   prop.table(table(doses_given)),
-                  tapply(.extract("yE"), doses_given, sum) / num_sims,
-                  tapply(.extract("yT"), doses_given, sum) / num_sims,
-                  table(doses_given) / num_sims)
+                  tapply(.extract("yE"), doses_given, sum) / n,
+                  tapply(.extract("yT"), doses_given, sum) / n,
+                  table(doses_given) / n)
     }
   )
 )

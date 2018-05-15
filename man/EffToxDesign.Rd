@@ -137,12 +137,12 @@ Calculate dose-transition pathways.
 }
 }
 
-\item{\code{$simulate(num_sims, true_eff, true_tox, seed = sample.int(.Machine$integer.max, 1), mcmcdiag = FALSE, ...)}}{
+\item{\code{$simulate(n, eff, tox, seed = sample.int(.Machine$integer.max, 1), mcmcdiag = FALSE, ...)}}{
 Simulate an EffTox trial design.
 \describe{
-\item{\code{num_sims}}{number of trials to simulate.}
-\item{\code{true_eff}}{vector of true efficacy rates for the K doses.}
-\item{\code{true_tox}}{vector of true toxicity rates for the K doses.}
+\item{\code{n}}{number of trials to simulate.}
+\item{\code{eff}}{vector of true efficacy rates for the K doses.}
+\item{\code{tox}}{vector of true toxicity rates for the K doses.}
 \item{\code{seed}}{integer value for random number generation.}
 \item{\code{mcmcdiag}}{logical indicating whether to return convergence diagnostics for the MCMC output upon which analysis results are based.}
 \item{\code{...}}{parameters passed to \code{\link[rstan:stanmodel-method-sampling]{sampling}}.}
@@ -200,9 +200,9 @@ design$decision()
 \dontrun{
 design$reset()
 design$dtp()
-sim <- design$simulate(num_sims = 10,
-                       true_eff = c(0.20, 0.40, 0.60, 0.80, 0.90),
-                       true_tox = c(0.05, 0.10, 0.15, 0.20, 0.40),
+sim <- design$simulate(n = 10,
+                       eff = c(0.20, 0.40, 0.60, 0.80, 0.90),
+                       tox = c(0.05, 0.10, 0.15, 0.20, 0.40),
                        chains = 2)
 sim$summary()}
 }

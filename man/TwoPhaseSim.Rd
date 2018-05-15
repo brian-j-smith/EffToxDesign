@@ -10,15 +10,15 @@ followed by a phase II expansion of the MTD cohort to assess efficacy.
 }
 
 \usage{
-TwoPhaseSim$new(design, true_eff, true_tox, outcomes)
+TwoPhaseSim$new(design, eff, tox, outcomes)
 }
 
 \arguments{
 \item{design}{\emph{\link{TwoPhaseDesign}} upon which the simulations were based.}
 
-\item{true_eff}{vector of true efficacy rates in the simulations.}
+\item{eff}{vector of true efficacy rates in the simulations.}
 
-\item{true_tox}{vector of true toxicity rates in the simulations.}
+\item{tox}{vector of true toxicity rates in the simulations.}
 
 \item{outcomes}{list of simulated dose-specific selections probabilities in the first and second trial phases and the average number of patients.}
 }

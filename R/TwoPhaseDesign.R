@@ -24,16 +24,16 @@ TwoPhaseDesign <- R6Class("TwoPhaseDesign",
     },
     
     
-    simulate = function(true_eff, true_tox) {
-      design1 <- threep3(true_tox, start = self$starting_level)
+    simulate = function(eff, tox) {
+      design1 <- threep3(tox, start = self$starting_level)
       mtd <- tapply(design1$prob, design1$mtd, sum)[-1]
       n_average <- design1$n.average + mtd * (self$n - 6)
       TwoPhaseSim$new(
         design = self$clone(),
-        true_eff = true_eff,
-        true_tox = true_tox,
+        eff = eff,
+        tox = tox,
         outcomes = list(stage1_selected = mtd,
-                        stage2_selected = 1 - pbinom(self$r, self$n, true_eff),
+                        stage2_selected = 1 - pbinom(self$r, self$n, eff),
                         n_average = n_average)
       )
     }
@@ -48,9 +48,9 @@ TwoPhaseSim <- R6Class("TwoPhaseSim",
     outcomes = NULL,
    
    
-    initialize = function(design, true_eff, true_tox, outcomes) {
+    initialize = function(design, eff, tox, outcomes) {
       self$design <- design
-      self$truth <- data.frame(eff = true_eff, tox = true_tox)
+      self$truth <- data.frame(eff = eff, tox = tox)
       self$outcomes <- outcomes
       invisible(self)
     },
