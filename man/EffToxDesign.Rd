@@ -95,13 +95,22 @@ Keep an initial number of patient outcomes.
 Reset the design by removing any existing patient outcomes.
 }
 
+\item{\code{$contour(eff = NULL, tox = NULL, num_levels = 10, num_points = 101)}}{
+Plot utility contours.
+\describe{
+\item{\code{eff}}{optional vector of efficacy probabilities to include as points in the plot.}
+\item{\code{tox}}{optional vector of toxicity probabilities to include as points in the plot.}
+\item{\code{num_levels}}{number of contour levels.}
+\item{\code{num_points}}{number of points at which to evaluate the contour levels.}
+}
+}
+
 \item{\code{$ESS()}}{
 Effective sample sizes of the efficacy and toxicity logit model priors.
 \subsection{Value}{
 Resulting ESS estimates in a vector of components named \dQuote{eff} and \dQuote{tox}.
 }
 }
-
 
 \item{\code{$decision(mcmcdiag = FALSE, ...)}}{
 Identify an optimal dose based on an EffTox statistical analysis of the current patient outcomes.
@@ -181,6 +190,7 @@ design <- EffToxDesign$new(
     
     cohort_sizes = rep(3, 13)
 )
+design$contour()
 design$ESS()
 design$add(yE = c(0, 1, 0, 1, 0, 1),
            yT = c(0, 0, 0, 1, 0, 0),

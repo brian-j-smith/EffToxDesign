@@ -18,6 +18,7 @@ Imports:
   clinfun,
   coda,
   foreach,
+  ggplot2,
   gtools,
   logitnorm,
   magrittr,
@@ -33,6 +34,5 @@ LinkingTo:
   RcppEigen (>= 0.3.2.9.0)
 Suggests:
   knitr,
-  rmarkdown,
-  ggplot2
+  rmarkdown
 RoxygenNote: 6.0.1
