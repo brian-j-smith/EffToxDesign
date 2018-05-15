@@ -120,6 +120,14 @@ A list with the following components:
 }
 }
 
+\item{\code{$dtp(n = 1, ...)}}{
+Calculate dose-transition pathways.
+\describe{
+\item{\code{n}}{number of future cohorts over which to calculate pathways.}
+\item{\code{...}}{parameters passed to \code{\link[rstan:stanmodel-method-sampling]{sampling}}.}
+}
+}
+
 \item{\code{$simulate(num_sims, true_eff, true_tox, seed = sample.int(.Machine$integer.max, 1), mcmcdiag = FALSE, ...)}}{
 Simulate an EffTox trial design.
 \describe{
@@ -139,6 +147,8 @@ An \emph{\link{EffToxSim}} object of simulated trials.
 }
 
 \references{
+Brock K, Billingham L, Copland M, Siddique S, Sirovica M, Yap C (2017). Implementing the EffTox dose-finding design in the Matchpoint trial. BMC Medical Research Methodology, 17(112):1-15.
+
 Thall PF, Cook JD (2004). Dose-finding based on efficacy-toxcity trade-offs. Biometrics, 60:684-693.
 
 Thall PF, Herrick RC, Nguyen HQ, Venier JJ, Norris JC (2014). Effective sample size for computing prior hyperparameters in Bayesian phase I-II dose-finding. Clinical Trials, 11(6):657-666.
@@ -179,6 +189,7 @@ design$decision()
 
 \dontrun{
 design$reset()
+design$dtp()
 sim <- design$simulate(num_sims = 10,
                        true_eff = c(0.20, 0.40, 0.60, 0.80, 0.90),
                        true_tox = c(0.05, 0.10, 0.15, 0.20, 0.40),

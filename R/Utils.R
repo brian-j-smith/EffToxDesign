@@ -21,6 +21,29 @@
 }
 
 
+.nextcohorts <- function(design, ...) {
+  n <- design$n
+  if(n == 0) {
+    starting_cohort <- 1
+    starting_level <- design$starting_level
+    sizes <- design$cohort_sizes
+  } else {
+    cum_cohort_sizes <- cumsum(design$cohort_sizes)
+    starting_cohort <- min(which(n <= cum_cohort_sizes))
+    if(cum_cohort_sizes[starting_cohort] == n) {
+      starting_cohort <- starting_cohort + 1
+      starting_level <- design$decision(...)$level
+    } else {
+      starting_level <- tail(design$levels, 1)
+    }   
+    sizes <- c(cum_cohort_sizes[starting_cohort] - n,
+               tail(design$cohort_sizes, -starting_cohort))
+  }
+  list(starting_cohort = starting_cohort, starting_level = starting_level,
+       sizes = sizes)
+}
+
+
 .simsummary <- function(eff, tox, selected, given, n_eff, n_tox, n) {
   x <- rbind("Pr(eff)" = eff,
              "Pr(tox)" = tox,
