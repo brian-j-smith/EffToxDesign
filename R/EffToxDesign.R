@@ -200,7 +200,7 @@ EffToxDesign <- R6Class("EffToxDesign",
       
       # Acceptable dosing levels
       dosing_levels <- 1:self$K
-      acc_efftox <- if(self$n > self$burn_in) {
+      acc_efftox <- if(self$n >= self$burn_in) {
         acc_eff <- colMeans(extract(samples, "prob_acc_eff")[[1]]) > self$pEL
         acc_tox <- colMeans(extract(samples, "prob_acc_tox")[[1]]) > self$pTL
         acc_lowest_untried <- (dosing_levels == max(self$levels) + 1) & acc_tox
@@ -215,10 +215,8 @@ EffToxDesign <- R6Class("EffToxDesign",
       # Recommended level
       utility <- rep(NA, self$K)
       if(any(acceptable)) {
-        prob_eff <- colMeans(extract(samples, "prob_eff")[[1]][, acceptable, drop = FALSE])
-        prob_tox <- colMeans(extract(samples, "prob_tox")[[1]][, acceptable, drop = FALSE])
-        utility[acceptable] <- efftox_utility(self$p, self$pi1E, self$pi2T,
-                                              prob_eff, prob_tox)
+        subsamples <- extract(samples, "utility")[[1]]
+        utility[acceptable] <- colMeans(subsamples[, acceptable, drop = FALSE])
       }
       level <- which.max(utility)
 
