@@ -183,7 +183,7 @@ EffToxDesign <- R6Class("EffToxDesign",
     },
     
     
-    decision = function(mcmcdiag = FALSE, ...) {
+    select = function(mcmcdiag = FALSE, ...) {
       samples <- sampling(stanmodels$EffTox, data = as.list(self), ...)
       
       # MCMC convergence diagnostic
@@ -291,12 +291,12 @@ EffToxDesign <- R6Class("EffToxDesign",
           yE <- rbinom(cohort_size, 1, eff[cohort_level])
           yT <- rbinom(cohort_size, 1, tox[cohort_level])
           self$add(yE = yE, yT = yT, levels = rep(cohort_level, cohort_size))
-          decision <- self$decision(mcmcdiag = mcmcdiag, ...)
-          cohort_level <- decision$level
-          mpsrf <- c(mpsrf, decision$mpsrf)
+          selected <- self$select(mcmcdiag = mcmcdiag, ...)
+          cohort_level <- selected$level
+          mpsrf <- c(mpsrf, selected$mpsrf)
           if(length(cohort_level) == 0) break
         }
-        outcome <- list(dose = decision$dose, yE = self$yE, yT = self$yT,
+        outcome <- list(dose = selected$dose, yE = self$yE, yT = self$yT,
                         doses_given = self$doses[self$levels], mpsrf = mpsrf)
         self$keep(num_keep)
         return(outcome)

@@ -32,7 +32,7 @@
     starting_cohort <- min(which(n <= cum_cohort_sizes))
     if(cum_cohort_sizes[starting_cohort] == n) {
       starting_cohort <- starting_cohort + 1
-      starting_level <- design$decision(...)$level
+      starting_level <- design$select(...)$level
     } else {
       starting_level <- tail(design$levels, 1)
     }   

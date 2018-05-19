@@ -4,7 +4,7 @@
 \alias{drop}
 \alias{keep}
 \alias{reset}
-\alias{decision}
+\alias{select}
 \alias{simulate}
 
 \title{EffToxDesign Class and Methods}
@@ -112,7 +112,7 @@ Resulting ESS estimates in a vector of components named \dQuote{eff} and \dQuote
 }
 }
 
-\item{\code{$decision(mcmcdiag = FALSE, ...)}}{
+\item{\code{$select(mcmcdiag = FALSE, ...)}}{
 Identify an optimal dose based on an EffTox statistical analysis of the current patient outcomes.
 \describe{
 \item{\code{mcmcdiag}}{logical indicating whether to return convergence diagnostics for the MCMC output upon which analysis results are based.}
@@ -195,7 +195,7 @@ design$ESS()
 design$add(yE = c(0, 1, 0, 1, 0, 1),
            yT = c(0, 0, 0, 1, 0, 0),
            doses = c(1, 1, 1, 2, 2, 2))
-design$decision()
+design$select()
 
 \dontrun{
 design$reset()
