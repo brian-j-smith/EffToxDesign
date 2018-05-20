@@ -227,51 +227,48 @@ EffToxDesign <- R6Class("EffToxDesign",
     
     dtp = function(n = 1, ...) {
       num_keep <- self$n
-      next_cohorts <- .nextcohorts(self)
-      starting_cohort <- next_cohorts$starting_cohort
-      starting_level <- next_cohorts$starting_level
-      next_cohort_sizes <- head(next_cohorts$sizes, n)
-      
+      next_cohorts <- .nextcohorts(self, ...)
+
       # Construct all possible outcome combinations
-      cohort_paths <- next_cohort_sizes %>%
+      cohort_paths <- next_cohorts$sizes %>%
+        head(n) %>%
         lapply(function(size) {
-          combinations(4, size, c("E", "T", "N", "B"), repeats.allowed = TRUE) %>%
+          combinations(4, size, c("E", "T", "N", "B"),
+                       repeats.allowed = TRUE) %>%
             apply(1, paste0, collapse="")
         }) %>%
         expand.grid(stringsAsFactors = FALSE)
       
-      # Record of dose levels given
-      levels_given = matrix(NA, nrow(cohort_paths), ncol(cohort_paths))
-      
+      # Dose-transition pathways
+      dtp <- matrix(NA_character_, nrow(cohort_paths), ncol(cohort_paths)) %>%
+        data.frame(stringsAsFactors = FALSE)
+
+      starting_level <- next_cohorts$starting_level
+      if(length(starting_level) == 0) starting_level <- NA
+      cohort_levels <- rep(starting_level, nrow(cohort_paths))      
+
       cache <- list()
-      for(i in 1:nrow(cohort_paths)) {
-        dtp <- ""
-        cohort_level <- starting_level
-        for(j in 1:ncol(cohort_paths)) {
-          dtp <- paste0(dtp, " ", cohort_level, cohort_paths[i, j])
-          if(dtp %in% names(cache)) {
-            cohort_level <- cache[[dtp]]
+      for(j in 1:ncol(cohort_paths)) {
+        for(i in which(!is.na(cohort_levels))) {
+          dtp[i, j] <- paste0(cohort_levels[i], cohort_paths[i, j])
+          path <- paste(dtp[i, 1:j], collapse = " ")
+          if(path %in% names(cache)) {
+            cohort_levels[i] <- cache[[path]]
           } else {
-            these_outcomes <- efftox_parse_outcomes(dtp)
-            self$add(yE = these_outcomes$yE,
-                     yT = these_outcomes$yT,
-                     levels = these_outcomes$levels)
-            cohort_level <- self$decision(...)$level
-            cache[[dtp]] <- cohort_level
+            outcomes <- efftox_parse_outcomes(path)
+            self$add(yE = outcomes$yE, yT = outcomes$yT, levels = outcomes$levels)
+            selected <- self$select(...)
+            cohort_levels[i] <-
+              ifelse(length(selected$level), selected$level, NA)
+            cache[[path]] <- cohort_levels[i]
             self$keep(num_keep)
           }
-          if(length(cohort_level)) levels_given[i, j] <- cohort_level
         }
       }
-      df <- data.frame(matrix(nrow = nrow(cohort_paths), ncol = 0))
-      levels <- rep(starting_level, nrow(cohort_paths))
-      for(k in 1:ncol(cohort_paths)) {
-        df[[paste0("cohort", starting_cohort + k - 1)]] <-
-          ifelse(is.na(levels), NA, paste0(levels, cohort_paths[, k]))
-        levels <- levels_given[, k]
-      }
-      df[[paste0("cohort", starting_cohort + k)]] <- levels
-      return(df)
+      dtp <- cbind(dtp, cohort_levels)
+      colnames(dtp) <- paste0("cohort",
+                              next_cohorts$starting_cohort + seq(dtp) - 1)
+      return(dtp)
     },
     
     
