@@ -95,13 +95,13 @@ Keep an initial number of patient outcomes.
 Reset the design by removing any existing patient outcomes.
 }
 
-\item{\code{$contour(eff = NULL, tox = NULL, num_levels = 10, num_points = 101)}}{
+\item{\code{$contour(eff = NULL, tox = NULL, bins = 8, n = 25)}}{
 Plot utility contours.
 \describe{
 \item{\code{eff}}{optional vector of efficacy probabilities to include as points in the plot.}
 \item{\code{tox}}{optional vector of toxicity probabilities to include as points in the plot.}
-\item{\code{num_levels}}{number of contour levels.}
-\item{\code{num_points}}{number of points at which to evaluate the contour levels.}
+\item{\code{bins}}{number of contour bins.}
+\item{\code{n}}{number of points at which to evaluate the contour.}
 }
 }
 

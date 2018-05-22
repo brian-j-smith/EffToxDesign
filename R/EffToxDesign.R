@@ -110,41 +110,25 @@ EffToxDesign <- R6Class("EffToxDesign",
     },
     
     
-    contour = function(eff = NULL, tox = NULL, num_levels = 10,
-                       num_points = 101) {
+    contour = function(eff = NULL, tox = NULL, bins = 8, n = 25) {
       stopifnot(length(eff) == length(tox))
       
-      num_levels <- num_levels + 2
-      eff_vals <- seq(0, 1, length = num_points)
-      
-      util_lim <- efftox_utility(self$p, self$pi1E, self$pi2T, c(0, 1), c(1, 0))
-      contours <- data.frame(
-        eff_vals <- rep(eff_vals, times = num_levels),
-        util_vals = rep(seq(util_lim[1], util_lim[2], length = num_levels),
-                        each = num_points)
-      )
-      contours$tox_vals <- efftox_get_tox(contours$eff_vals, contours$util_vals,
-                                          self$p, self$pi1E, self$pi2T)
+      contours <- expand.grid(eff_vals = seq(0, 1, length = n),
+                              tox_vals = seq(0, 1, length = n))
+      contours$util_vals <- efftox_utility(self$p, self$pi1E, self$pi2T,
+                                           contours$eff_vals, contours$tox_vals)
 
       target_points <- data.frame(
         eff = c(self$pi1E, 1, self$pi3E),
         tox = c(0, self$pi2T, self$pi3T)
       )
       
-      target_contour <- data.frame(
-        eff_vals = eff_vals,
-        util_vals = 0
-      )
-      target_contour$tox_vals <- efftox_get_tox(target_contour$eff_vals,
-                                                target_contour$util_vals,
-                                                self$p, self$pi1E, self$pi2T)
-      
-      plt <- ggplot(contours,
-                    aes(x = eff_vals, y = tox_vals, group = util_vals)) +
-        geom_line(size = 0.5, alpha = 0.25) +
-        geom_point(data = target_points, aes(x = eff, y = tox, group = 1),
-                   col = 'blue', shape = 24, size = 3) +
-        geom_line(data = target_contour, size = 1) +
+      plt <- ggplot() +
+        geom_contour(data = contours,
+                     aes(x = eff_vals, y = tox_vals, z = util_vals),
+                     bins = bins) +
+        geom_point(data = target_points, aes(x = eff, y = tox),
+                   col = 'red', size = 3) +
         xlim(0, 1) +
         ylim(0, 1) +
         xlab("Pr(Efficacy)") +
@@ -153,7 +137,7 @@ EffToxDesign <- R6Class("EffToxDesign",
       if(length(eff)) {
         user_points <- data.frame(eff = eff, tox = tox, dl = seq(eff))
         plt <- plt + geom_text(data = user_points,
-                               aes(x = eff, y = tox, group = 1, label = dl),
+                               aes(x = eff, y = tox, label = dl),
                                col = 'red', size = 4)
       }
       
