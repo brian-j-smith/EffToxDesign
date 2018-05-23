@@ -41,17 +41,24 @@ EffToxDesign <- R6Class("EffToxDesign",
                           thetaE_mean, thetaE_sd, thetaT_mean, thetaT_sd,
                           psi_mean, psi_sd, cohort_sizes,
                           starting_dose = doses[1], burn_in = 0) {
+      stopifnot(all(doses > 0))
+      stopifnot(all(diff(doses) > 0))
       self$doses <- doses
       self$K <- length(doses)
+      
       self$piE <- piE
       self$pEL <- pEL
       self$piT <- piT
       self$pTL <- pTL
+      
+      stopifnot(pi3E > pi1E)
+      stopifnot(pi3T < pi2T)
       self$pi1E <- pi1E
       self$pi2T <- pi2T
       self$pi3E <- pi3E
       self$pi3T <- pi3T
       self$p <- efftox_solve_p(pi1E, pi2T, pi3E, pi3T)
+      
       self$muE_mean <- thetaE_mean[1]
       self$muE_sd <- thetaE_sd[1]
       self$betaE1_mean <- thetaE_mean[2]
@@ -67,9 +74,9 @@ EffToxDesign <- R6Class("EffToxDesign",
       
       self$starting_level <- which(starting_dose == doses)
       if(length(self$starting_level) != 1) stop("Invalid starting dose value")
-      
       self$burn_in <- burn_in
       self$cohort_sizes <- cohort_sizes
+      
       invisible(self)
     },
     
