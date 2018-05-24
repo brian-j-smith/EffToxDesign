@@ -31,13 +31,14 @@
 #' @param pi3T Toxicity probability of an equi-utility third point
 #'
 #' @return The p-index
-#' @export
 #'
 #' @examples
 #' efftox_solve_p(0.5, 0.65, 0.7, 0.25)
 #'
 #' @references Thall, Herrick, Nguyen, Venier & Norris. 2014, Effective sample
 #' size for computing prior hyperparameters in Bayesian phase I-II dose-finding
+#'
+#' @noRd
 #'
 efftox_solve_p <- function(pi1E, pi2T, pi3E, pi3T) {
   # Calculate p for the efficacy/toxicity contours that will intersect points
@@ -67,7 +68,6 @@ efftox_solve_p <- function(pi1E, pi2T, pi3E, pi3T) {
 #' @param degree degree of the polynomial dose effect in the logit model.
 #'
 #' @return A vector of coefficients.
-#' @export
 #'
 #' @seealso
 #' \code{\link{EffToxDesign}}
@@ -85,7 +85,6 @@ efftox_theta <- function(probs, doses, degree = 1) {
 #' to demonstrate EffTox in Thall et al. 2014.
 #'
 #' @return a \code{list} of parameters, described in \code{efftox_params}
-#' @export
 #'
 #' @examples
 #' design <- efftox_parameters_demo()
@@ -97,6 +96,8 @@ efftox_theta <- function(probs, doses, degree = 1) {
 #'
 #' @references Thall, Herrick, Nguyen, Venier & Norris. 2014, Effective sample
 #' size for computing prior hyperparameters in Bayesian phase I-II dose-finding
+#'
+#' @noRd
 #'
 efftox_parameters_demo <- function() {
   # Demonstration from 'Effective sample size for computing prior
@@ -139,7 +140,6 @@ efftox_parameters_demo <- function() {
 #' @param prob_tox Probability of toxicity; number between 0 and 1
 #'
 #' @return Utility value(s)
-#' @export
 #'
 #' @examples
 #' p <- efftox_solve_p(0.5, 0.65, 0.7, 0.25)
@@ -152,6 +152,8 @@ efftox_parameters_demo <- function() {
 #'
 #' @seealso \code{\link{efftox_solve_p}}
 #'
+#' @noRd
+#'
 efftox_utility <- function(p, pi1E, pi2T, prob_eff, prob_tox) {
   a <- ((1 - prob_eff) / (1 - pi1E))
   b <- prob_tox / pi2T
@@ -160,87 +162,7 @@ efftox_utility <- function(p, pi1E, pi2T, prob_eff, prob_tox) {
 }
 
 
-#' @title Plot densities of EffTox dose utilities
-#'
-#' @description Plot densities of EffTox dose utilities. Optionally plot only a
-#' subset of the doses by specifying the \code{doses} parameter. This function
-#' requires ggplot2 be installed.
-#'
-#' @param fit An instance of \code{rstan::stanmodel}, derived by sampling an
-#' EffTox model.
-#' @param doses optional, vector of integer dose-levels to plot. E.g. to plot
-#' only dose-levels 1, 2 & 3 (and suppress the plotting of any other doses), use
-#' \code{doses = 1:3}
-#'
-#' @return an instance of \code{ggplot}. Omit assignment to just view the plot.
-#' @export
-#'
-#' @note This function requires that ggplot2 be installed.
-#'
-#' @examples
-#' design <- efftox_parameters_demo()
-#' design$n <- 3
-#' design$yE <- c(0, 1, 1)
-#' design$yT <- c(0, 0, 1)
-#' design$levels <- c(1, 2, 3)
-#' fit <- rstan::sampling(stanmodels$EffTox, data = as.list(design))
-#' efftox_utility_density_plot(fit) + ggplot2::ggtitle('My doses')  # Too busy?
-#' # Specify subset of doses to make plot less cluttered
-#' efftox_utility_density_plot(fit, doses = 1:3) + ggplot2::ggtitle('My doses')
-#'
-efftox_utility_density_plot <- function(fit, doses = NULL) {
-  if(!('ggplot2' %in% utils::installed.packages()))
-    stop('THis function requires ggplot2 be installed.')
-  
-  u <- rstan::extract(fit, par = 'utility')[[1]]
-  df <- data.frame(Utility = as.numeric(u),
-                   D = rep(1:5, each = nrow(u))
-  )
-  df$Dose = factor(df$D)
-  if(!is.null(doses))
-    df = df[df$D %in% doses, ]
-  Dose <- Utility <- NULL
-  p <- ggplot2::ggplot(df, ggplot2::aes(x = Utility, group = Dose,
-                                        colour = Dose)) +
-    ggplot2::geom_density()
-  return(p)
-}
-
-
-#' @title Get dose-superiority matrix in EffTox
-#'
-#' @description Get a dose-superiority matrix from an EffTox dose analysis.
-#' EffTox seeks to choose the dose with the highest utility, thus superiority
-#' is inferred by posterior utility. The item in row i, col j is the posterior
-#' probability that the utility of dose j exceeds that of dose i.
-#'
-#' @param fit An instance of \code{rstan::stanmodel}, derived by sampling an
-#' EffTox model.
-#'
-#' @return n by n matrix, where n is number of doses under investigation.
-#' The item in row i, col j is the posterior probability that the utility of
-#' dose j exceeds that of dose i.
-#' @export
-#'
-#' @examples
-#' design <- efftox_parameters_demo()
-#' design$n <- 3
-#' design$yE <- c(0, 1, 1)
-#' design$yT <- c(0, 0, 1)
-#' design$levels <- c(1, 2, 3)
-#' fit <- rstan::sampling(stanmodels$EffTox, data = as.list(design))
-#' sup_mat <- efftox_superiority(fit)
-#'
-efftox_superiority <- function(fit) {
-  u <- rstan::extract(fit, par = 'utility')[[1]]
-  superiority_mat <- sapply(1:ncol(u), function(i) sapply(1:ncol(u), function(j)
-    mean(u[ , i] > u[ , j])))
-  diag(superiority_mat) <- NA
-  dimnames(superiority_mat) = list(1:ncol(u), 1:ncol(u))
-  return(superiority_mat)
-}
-
-
+#' @noRd
 #' @title Parse a string of EffTox outcomes to binary vector notation.
 #'
 #' @description Parse a string of EffTox outcomes to the binary vector notation
@@ -266,8 +188,6 @@ efftox_superiority <- function(fit) {
 #' \code{n}. These elements are congruent with the same in
 #' \code{efftox_params}.
 #'
-#' @export
-#'
 #' @examples
 #' x = efftox_parse_outcomes('1NNE 2EEN 3TBB')
 #' x$n == 9
@@ -276,6 +196,8 @@ efftox_superiority <- function(fit) {
 #'
 #' @references Brock et al. (submitted 2017), Implementing the EffTox
 #' Dose-Finding Design in the Matchpoint Trial.
+#'
+#' @noRd
 #'
 efftox_parse_outcomes <- function(outcome_string) {
   regex = '\\w*\\d+[ETBN]+\\w*'
