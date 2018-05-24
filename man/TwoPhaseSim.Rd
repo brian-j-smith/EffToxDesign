@@ -1,6 +1,7 @@
 \name{TwoPhaseSim}
+\docType{class}
 \alias{TwoPhaseSim}
-\alias{summary}
+\alias{summary, TwoPhaseSim-method}
 
 \title{TwoPhaseSim Class and Methods}
 
@@ -9,22 +10,22 @@ An R6 class for simulated phase I 3+3 design to establish maximum tolerable dose
 followed by a phase II expansion of the MTD cohort to assess efficacy.
 }
 
-\usage{
-TwoPhaseSim$new(design, eff, tox, outcomes)
+\section{Constructor}{
+\preformatted{TwoPhaseSim$new(design, eff, tox, outcomes)}
+\subsection{Arguments}{
+\describe{
+\item{\code{design}}{\emph{\link{TwoPhaseDesign}} upon which the simulations were based.}
+
+\item{\code{eff}}{vector of true efficacy rates in the simulations.}
+
+\item{\code{tox}}{vector of true toxicity rates in the simulations.}
+
+\item{\code{outcomes}}{list of simulated dose-specific selections probabilities in the first and second trial phases and the average number of patients.}
 }
-
-\arguments{
-\item{design}{\emph{\link{TwoPhaseDesign}} upon which the simulations were based.}
-
-\item{eff}{vector of true efficacy rates in the simulations.}
-
-\item{tox}{vector of true toxicity rates in the simulations.}
-
-\item{outcomes}{list of simulated dose-specific selections probabilities in the first and second trial phases and the average number of patients.}
 }
-
-\value{
-An \emph{TwoPhaseSim} object.
+\subsection{Value}{
+A \emph{TwoPhaseSim} object.
+}
 }
 
 \section{Methods}{

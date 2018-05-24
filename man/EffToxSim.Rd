@@ -1,6 +1,7 @@
 \name{EffToxSim}
+\docType{class}
 \alias{EffToxSim}
-\alias{summary}
+\alias{summary, EffToxSim-method}
 
 \title{EffToxSim Class and Methods}
 
@@ -8,22 +9,23 @@
 An R6 class for simulated EffTox clinical trials.
 }
 
-\usage{
-EffToxSim$new(design, eff, tox, outcomes)
+\section{Constructor}{
+\preformatted{EffToxSim$new(design, eff, tox, outcomes)
 }
+\subsection{Arguments}{
+\describe{
+\item{\code{design}}{\emph{\link{EffToxDesign}} upon which the simulations were based.}
 
-\arguments{
-\item{design}{\emph{\link{EffToxDesign}} upon which the simulations were based.}
+\item{\code{eff}}{vector of true efficacy rates in the simulations.}
 
-\item{eff}{vector of true efficacy rates in the simulations.}
+\item{\code{tox}}{vector of true toxicity rates in the simulations.}
 
-\item{tox}{vector of true toxicity rates in the simulations.}
-
-\item{outcomes}{list of efficacies, toxicities, doses given, and doses selecting in the simulated trials.}
+\item{\code{outcomes}}{list of efficacies, toxicities, doses given, and doses selecting in the simulated trials.}
 }
-
-\value{
+}
+\subsection{Value}{
 An \emph{EffToxSim} object.
+}
 }
 
 \section{Methods}{

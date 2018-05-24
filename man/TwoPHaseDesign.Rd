@@ -1,6 +1,7 @@
 \name{TwoPhaseDesign}
+\docType{class}
 \alias{TwoPhaseDesign}
-\alias{simulate}
+\alias{simulate, TwoPhaseDesign-method}
 
 \title{TwoPhaseDesign Class and Methods}
 
@@ -9,31 +10,31 @@ An R6 class for phase I 3+3 designs to establish maximum tolerable dose (MTD)
 followed by phase II expansions of the MTD cohort to assess efficacy.
 }
 
-\usage{
-TwoPhaseDesign$new(doses, pi0, pi1, alpha, beta, starting_dose = doses[1],
-                   n = NULL, r = NULL)
+\section{Constructor}{
+\preformatted{TwoPhaseDesign$new(doses, pi0, pi1, alpha, beta, starting_dose = doses[1],
+                   n = NULL, r = NULL)}
+\subsection{Arguments}{
+\describe{
+\item{\code{doses}}{vector of positive and strictly increasing numeric dose values under consideration in the trial.}
+
+\item{\code{pi0}}{upper bound on the true efficacy rate in the null hypothesis.}
+
+\item{\code{pi1}}{efficacy rate at which the phase II trial is powered.}
+
+\item{\code{alpha}}{type I error (false positive) rate of the phase II trial.}
+
+\item{\code{beta}}{type II error (1 - power) rate of the phase II trial.}
+
+\item{\code{starting_dose}}{starting dose value to be given to the first cohort of patients.}
+
+\item{\code{n}}{total number of patients to include in the phase II trial, as an alternative to pi0, pi1, alpha, and beta.}
+
+\item{\code{r}}{number of responses above which the treatment will be considered efficacious, to be specified along with n.}
 }
-
-\arguments{
-\item{doses}{vector of positive and strictly increasing numeric dose values under consideration in the trial.}
-
-\item{pi0}{upper bound on the true efficacy rate in the null hypothesis.}
-
-\item{pi1}{efficacy rate at which the phase II trial is powered.}
-
-\item{alpha}{type I error (false positive) rate of the phase II trial.}
-
-\item{beta}{type II error (1 - power) rate of the phase II trial.}
-
-\item{starting_dose}{starting dose value to be given to the first cohort of patients.}
-
-\item{n}{total number of patients to include in the phase II trial, as an alterantive to pi0, pi1, alpha, and beta.}
-
-\item{r}{number of responses above which the treatment will be considered efficacious, to be specified along with n.}
 }
-
-\value{
-An \emph{EffToxDesign} object.
+\subsection{Value}{
+A \emph{TwoPhaseDesign} object.
+}
 }
 
 \section{Methods}{
@@ -46,7 +47,7 @@ Simulate a two phase I-II trial design.
 \item{\code{tox}}{vector of true toxicity rates for the K doses.}
 }
 \subsection{Value}{
-An \emph{\link{TwoPhaseSim}} object of simulated trials.
+A \emph{\link{TwoPhaseSim}} object of simulated trials.
 }
 }
 

@@ -1,7 +1,8 @@
 \name{EffToxSelect}
+\docType{class}
 \alias{EffToxSelect}
-\alias{density}
-\alias{superiority}
+\alias{density, EffToxSelect-method}
+\alias{superiority, EffToxSelect-method}
 
 \title{EffToxSelect Class and Methods}
 
@@ -9,27 +10,27 @@
 An R6 class for an EffTox dose selection analysis.
 }
 
-\usage{
-EffToxSelect$new(design, level, utility, samples, mpsrf)
+\section{Constructor}{
+\preformatted{EffToxSelect$new(design, level, utility, samples, mpsrf)}
+\subsection{Arguments}{
+\describe{
+\item{\code{design}}{\emph{\link{EffToxDesign}} upon which the simulations were based.}
+
+\item{\code{level}}{selected dosing level.}
+
+\item{\code{utility}}{vector of dose utility values.}
+
+\item{\code{samples}}{MCMC sampling results from a call to \code{\link[rstan:stanmodel-method-sampling]{sampling}}.}
+
+\item{\code{mpsrf}}{Gelman and Brooks multivariate potential scale reduction factor convergence assessment diagnostic.}
 }
-
-\arguments{
-\item{design}{\emph{\link{EffToxDesign}} upon which the simulations were based.}
-
-\item{level}{selected dosing level.}
-
-\item{utility}{vector of dose utility values.}
-
-\item{samples}{MCMC sampling results from a call to \code{\link[rstan:stanmodel-method-sampling]{sampling}}.}
-
-\item{mpsrf}{Gelman and Brooks multivariate potential scale reduction factor convergence assessment diagnostic.}
 }
-
-\value{
+\subsection{Value}{
 An \emph{EffToxSelect} object.
 }
+}
 
-\section{Fields and Methods}{
+\section{Methods}{
 \describe{
 
 \item{\code{$density()}}{

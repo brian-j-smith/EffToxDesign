@@ -1,11 +1,12 @@
 \name{EffToxDesign}
+\docType{class}
 \alias{EffToxDesign}
-\alias{add}
-\alias{drop}
-\alias{keep}
-\alias{reset}
-\alias{select}
-\alias{simulate}
+\alias{add, EffToxDesign-method}
+\alias{drop, EffToxDesign-method}
+\alias{keep, EffToxDesign-method}
+\alias{reset, EffToxDesign-method}
+\alias{select, EffToxDesign-method}
+\alias{simulate, EffToxDesign-method}
 
 \title{EffToxDesign Class and Methods}
 
@@ -13,55 +14,54 @@
 An R6 class for EffTox clinical trial designs.
 }
 
-\usage{
-EffToxDesign$new(doses, piE, pEL, piT, pTL, pi1E, pi2T, pi3E, pi3T,
-                 muE, betaE1, betaE2, muT, betaT1, psi, cohort_sizes,
-                 starting_dose = doses[1], run_in = 0)
-}
+\section{Constructor}{
+\preformatted{EffToxDesign$new(doses, piE, pEL, piT, pTL, pi1E, pi2T, pi3E, pi3T,
+                 thetaE_mean, thetaE_sd, thetaT_mean, thetaT_sd,
+                 psi_mean, psi_sd, cohort_sizes,
+                 starting_dose = doses[1], burn_in = 0)}
+\subsection{Arguments}{
+\describe{
+\item{\code{doses}}{vector of positive and strictly increasing numeric dose values under consideration in the trial.}
 
-\arguments{
-\item{doses}{vector of positive and strictly increasing numeric dose values under consideration in the trial.}
-
-\item{piE}{fixed lower limit for which dose \eqn{d}{d} is considered to have
+\item{\code{piE}}{fixed lower limit for which dose \eqn{d}{d} is considered to have
 acceptable efficacy if \eqn{\Pr[\pi_E(d) > \pi_E | \text{data}] \ge p_{E,L}}{Pr[piE(d) > piE | data] >= pEL}.}
 
-\item{pEL}{small threshold on the probability that the efficacy rate is above the fixed \code{piE} limit.}
+\item{\code{pEL}}{small threshold on the probability that the efficacy rate is above the fixed \code{piE} limit.}
 
-\item{piT}{fixed upper limit for which dose \eqn{d}{d} is considered to have acceptable toxicity if \eqn{\Pr[\pi_T(d) < \pi_T | \text{data}] \ge p_{T,L}}{Pr[piT(d) < piT | data] >= pTL}.}
+\item{\code{piT}}{fixed upper limit for which dose \eqn{d}{d} is considered to have acceptable toxicity if \eqn{\Pr[\pi_T(d) < \pi_T | \text{data}] \ge p_{T,L}}{Pr[piT(d) < piT | data] >= pTL}.}
 
-\item{pTL}{small threshold on the probability that the toxicity rate is below the fixed \code{piT} limit.}
+\item{\code{pTL}}{small threshold on the probability that the toxicity rate is below the fixed \code{piT} limit.}
 
-\item{pi1E}{first efficacy target rate \eqn{(\pi_{1,E}, 0)}{(pi1E, 0)} defining the efficacy-toxicity trade-off contour.}
+\item{\code{pi1E}}{first efficacy target rate \eqn{(\pi_{1,E}, 0)}{(pi1E, 0)} defining the efficacy-toxicity trade-off contour.}
 
-\item{pi2T}{second toxicity target rate \eqn{(0, \pi_{2,T})}{(0, pi2T)}.}
+\item{\code{pi2T}}{second toxicity target rate \eqn{(0, \pi_{2,T})}{(0, pi2T)}.}
 
-\item{pi3E}{third efficacy target rate in the pair \eqn{(\pi_{3,E}, \pi_{3,T})}{(pi3E, pi3T)}.}
+\item{\code{pi3E}}{third efficacy target rate in the pair \eqn{(\pi_{3,E}, \pi_{3,T})}{(pi3E, pi3T)}.}
 
-\item{pi3T}{third toxicity target rate in the pair \eqn{(\pi_{3,E}, \pi_{3,T})}{(pi3E, pi3T)}.}
+\item{\code{pi3T}}{third toxicity target rate in the pair \eqn{(\pi_{3,E}, \pi_{3,T})}{(pi3E, pi3T)}.}
 
-\item{p}{shape parameter of the contour.}
+\item{\code{thetaE_mean}}{vector of prior means for the efficacy logit model parameters.}
 
-\item{muE}{vector of prior mean and standard deviation for the intercept in the efficacy logit model.}
+\item{\code{thetaE_sd}}{vector of prior standard deviations for the efficacy logit model parameters.}
 
-\item{betaE1}{vector of prior mean and standard deviation for the linear effect.}
+\item{\code{thetaT_mean}}{vector of prior means for the toxicity logit model parameters.}
 
-\item{betaE2}{vector of prior mean and standard deviation for the quadratic effect.}
+\item{\code{thetaT_sd}}{vector of prior standard deviations for the toxicity logit model parameters.}
 
-\item{muT}{vector of prior mean and standard deviation for the intercept in the toxicity logit model.}
+\item{\code{psi_mean}}{prior mean for the efficacy-toxicity association parameter.}
 
-\item{betaT1}{vector of prior mean and standard deviation for the linear effect.}
+\item{\code{psi_sd}}{prior standard deviation for the efficacy-toxicity association parameter.}
 
-\item{psi_mean}{vector of prior mean and standard deviation for the efficacy-toxicity association parameter.}
+\item{\code{starting_dose}}{starting dose value to be given to the first cohort of patients.}
 
-\item{starting_dose}{starting dose value to be given to the first cohort of patients.}
+\item{\code{burn_in}}{number of patients to enroll before checking for acceptable toxicity and efficacy.}
 
-\item{run_in}{number of patients to enroll before checking for acceptable toxicity and efficacy.}
-
-\item{cohort_sizes}{vector giving the number of patients treated at each successive selected dose.}
+\item{\code{cohort_sizes}}{vector giving the number of patients treated at each successive selected dose.}
 }
-
-\value{
+}
+\subsection{Value}{
 An \emph{EffToxDesign} object.
+}
 }
 
 \section{Methods}{
@@ -73,7 +73,7 @@ Add one or more patient outcomes.
 \item{\code{yE}}{vector of 0-1 efficacy indicators for the patients.}
 \item{\code{yT}}{vector of 0-1 toxicity indicators for the patients.}
 \item{\code{doses}}{vector of doses given to the patients.}
-\item{\code{levels}}{vector of dosing levels (1:K), as an alterenative to doses.}
+\item{\code{levels}}{vector of dosing levels (1:K), as an alternative to doses.}
 }
 }
 
