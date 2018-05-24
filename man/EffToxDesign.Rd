@@ -119,13 +119,7 @@ Identify an optimal dose based on an EffTox statistical analysis of the current 
 \item{\code{...}}{parameters passed to \code{\link[rstan:stanmodel-method-sampling]{sampling}}.}
 }
 \subsection{Value}{
-A list with the following components:
-\describe{
-\item{\code{dose}}{optimal dose.}
-\item{\code{level}}{optimal dosing level (1:K).}
-\item{\code{samples}}{MCMC samples for the analysis.}
-\item{\code{mpsrf}}{Gelman and Brooks multivariate potential scale reduction factor MCMC convergence diagnostic if \code{mcmcdiag = TRUE} or \code{NA} otherwise.}
-}
+An \emph{\link{EffToxSelect}} object of dose selection analysis results.
 }
 }
 
@@ -164,12 +158,13 @@ Thall PF, Herrick RC, Nguyen HQ, Venier JJ, Norris JC (2014). Effective sample s
 }
 
 \seealso{
-\code{\link{EffToxSim}}
+\code{\link{EffToxSelect}, \link{EffToxSim}, \link{efftox_theta}}
 }
 
 \examples{
+doses <- c(1, 2, 4, 6.6, 10)
 design <- EffToxDesign$new(
-    doses = c(1, 2, 4, 6.6, 10),
+    doses = doses,
 
     piE = 0.5,
     pEL = 0.1,
@@ -181,13 +176,14 @@ design <- EffToxDesign$new(
     pi3E = 0.7,
     pi3T = 0.25,
     
-    thetaE_mean = c(0.7367, 3.4181, 0),
+    thetaE_mean = efftox_theta(c(0.2, 0.4, 0.6, 0.8, 0.90), doses, 2),
     thetaE_sd = c(2.5423, 2.4406, 0.2),
-    thetaT_mean = c(-7.9593, 1.5482),
+    thetaT_mean = efftox_theta(c(0.02, 0.04, 0.06, 0.08, 0.10), doses),
     thetaT_sd = c(3.5487, 3.5018),
     psi_mean = 0,
     psi_sd = 1,
     
+    starting_dose = doses[2],
     cohort_sizes = rep(3, 13)
 )
 design$contour()
@@ -195,7 +191,10 @@ design$ESS()
 design$add(yE = c(0, 1, 0, 1, 0, 1),
            yT = c(0, 0, 0, 1, 0, 0),
            doses = c(1, 1, 1, 2, 2, 2))
-design$select()
+selected <- design$select()
+selected$dose
+selected$density()
+selected$superiority()
 
 \dontrun{
 design$reset()

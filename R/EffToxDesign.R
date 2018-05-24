@@ -211,8 +211,8 @@ EffToxDesign <- R6Class("EffToxDesign",
       }
       level <- which.max(utility)
 
-      list(dose = self$doses[level], level = level, utilty = utility,
-           samples = samples, mpsrf = mpsrf)
+      EffToxSelect$new(design = self, level = level, utility = utility,
+                       samples = samples, mpsrf = mpsrf)
     },
     
     
