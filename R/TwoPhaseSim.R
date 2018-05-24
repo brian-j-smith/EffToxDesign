@@ -6,7 +6,7 @@ TwoPhaseSim <- R6Class("TwoPhaseSim",
    
    
     initialize = function(design, eff, tox, outcomes) {
-      self$design <- design
+      self$design <- design$clone()
       self$truth <- data.frame(eff = eff, tox = tox)
       self$outcomes <- outcomes
       invisible(self)

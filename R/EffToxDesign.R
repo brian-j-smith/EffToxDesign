@@ -289,8 +289,7 @@ EffToxDesign <- R6Class("EffToxDesign",
         self$keep(num_keep)
         return(outcome)
       }
-      EffToxSim$new(design = self$clone(), eff = eff, tox = tox,
-                    outcomes = outcomes)
+      EffToxSim$new(design = self, eff = eff, tox = tox, outcomes = outcomes)
     }
   )
 )

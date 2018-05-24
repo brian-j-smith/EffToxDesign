@@ -29,7 +29,7 @@ TwoPhaseDesign <- R6Class("TwoPhaseDesign",
       mtd <- tapply(design1$prob, design1$mtd, sum)[-1]
       n_average <- design1$n.average + mtd * (self$n - 6)
       TwoPhaseSim$new(
-        design = self$clone(),
+        design = self,
         eff = eff,
         tox = tox,
         outcomes = list(stage1_selected = mtd,
