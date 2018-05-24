@@ -122,8 +122,8 @@ EffToxDesign <- R6Class("EffToxDesign",
       
       contours <- expand.grid(eff_vals = seq(0, 1, length = n),
                               tox_vals = seq(0, 1, length = n))
-      contours$util_vals <- efftox_utility(self$p, self$pi1E, self$pi2T,
-                                           contours$eff_vals, contours$tox_vals)
+      contours$util_vals <- efftox_utility(contours$eff_vals, contours$tox_vals,
+                                           self$p, self$pi1E, self$pi2T)
 
       target_points <- data.frame(
         eff = c(self$pi1E, 1, self$pi3E),
