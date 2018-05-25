@@ -54,7 +54,7 @@ acceptable efficacy if \eqn{\Pr[\pi_E(d) > \pi_E | \text{data}] \ge p_{E,L}}{Pr[
 
 \item{\code{starting_dose}}{starting dose value to be given to the first cohort of patients.}
 
-\item{\code{burn_in}}{number of patients to enroll before checking for acceptable toxicity and efficacy.}
+\item{\code{burn_in}}{minimum number of patients to enroll before the trial can stop for efficacy or toxicity; specified as a single scalar value or vector of two separate values for the respective endpoints.}
 
 \item{\code{cohort_sizes}}{vector giving the number of patients treated at each successive selected dose.}
 }

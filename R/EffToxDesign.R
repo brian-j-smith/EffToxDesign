@@ -74,7 +74,7 @@ EffToxDesign <- R6Class("EffToxDesign",
       
       self$starting_level <- which(starting_dose == doses)
       if(length(self$starting_level) != 1) stop("Invalid starting dose value")
-      self$burn_in <- burn_in
+      self$burn_in <- rep(burn_in, length.out = 2)
       self$cohort_sizes <- cohort_sizes
       
       invisible(self)
@@ -191,14 +191,18 @@ EffToxDesign <- R6Class("EffToxDesign",
       
       # Acceptable dosing levels
       dosing_levels <- 1:self$K
-      acc_efftox <- if(self$n >= self$burn_in) {
-        acc_eff <- colMeans(extract(samples, "prob_acc_eff")[[1]]) > self$pEL
-        acc_tox <- colMeans(extract(samples, "prob_acc_tox")[[1]]) > self$pTL
-        acc_lowest_untried <- (dosing_levels == max(self$levels) + 1) & acc_tox
-        (acc_eff & acc_tox) | acc_lowest_untried
+      acc_eff <- if(self$n >= self$burn_in[1]) {
+        colMeans(extract(samples, "prob_acc_eff")[[1]]) > self$pEL
       } else {
         TRUE
       }
+      acc_tox <- if(self$n >= self$burn_in[2]) {
+        colMeans(extract(samples, "prob_acc_tox")[[1]]) > self$pTL
+      } else {
+        TRUE
+      }
+      acc_lowest_untried <- (dosing_levels == max(self$levels) + 1) & acc_tox
+      acc_efftox <- (acc_eff & acc_tox) | acc_lowest_untried
       acc_range <- (dosing_levels >= min(self$levels) - 1) &
                    (dosing_levels <= max(self$levels) + 1)
       acceptable <- acc_efftox & acc_range
