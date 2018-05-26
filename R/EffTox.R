@@ -79,54 +79,6 @@ efftox_theta <- function(probs, doses, degree = 1) {
 }
 
 
-#' @title Get parameters to run the EffTox demo
-#'
-#' @description Get parameters to run the EffTox demo. These match those used
-#' to demonstrate EffTox in Thall et al. 2014.
-#'
-#' @return a \code{list} of parameters, described in \code{efftox_params}
-#'
-#' @examples
-#' design <- efftox_parameters_demo()
-#' names(design)
-#' design$doses == c(1, 2, 4, 6.6, 10)
-#'
-#' @seealso
-#' \code{\link{efftox_params}}
-#'
-#' @references Thall, Herrick, Nguyen, Venier & Norris. 2014, Effective sample
-#' size for computing prior hyperparameters in Bayesian phase I-II dose-finding
-#'
-#' @noRd
-#'
-efftox_parameters_demo <- function() {
-  # Demonstration from 'Effective sample size for computing prior
-  # hyperparameters in Bayesian phase I-II dose-finding', Thall et al., 2014
-  EffToxDesign$new(
-    doses = c(1, 2, 4, 6.6, 10),
-
-    piT = 0.3,
-    pTL = 0.1,
-    piE = 0.5,
-    pEL = 0.1,
-
-    pi1E = 0.5,
-    pi2T = 0.65,
-    pi3E = 0.7,
-    pi3T = 0.25,
-    
-    thetaE_mean = c(0.7367, 3.4181, 0),
-    thetaE_sd = c(2.5423, 2.4406, 0.2),
-    thetaT_mean = c(-7.9593, 1.5482),
-    thetaT_sd = c(3.5487, 3.5018),
-    psi_mean = 0,
-    psi_sd = 1,
-
-    cohort_sizes = rep(3, 13)
-  )
-}
-
-
 #' @title Get the utility of efficacy & toxicity probability pairs
 #'
 #' @description Get the utility of efficacy & toxicity probability pairs
@@ -162,7 +114,6 @@ efftox_utility <- function(eff, tox, p, pi1E, pi2T) {
 }
 
 
-#' @noRd
 #' @title Parse a string of EffTox outcomes to binary vector notation.
 #'
 #' @description Parse a string of EffTox outcomes to the binary vector notation
