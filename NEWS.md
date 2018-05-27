@@ -2,6 +2,13 @@
 
 ## Version Updates
 
+## 0.2
+
+* Added EffToxSelect density plots for efficacy and toxicity probabilities.
+* Added EffToxSim and TwoPhaseSim bar plots for summary statistics.
+* Renamed EffToxSim and TwoPhaseSim summary statistics "E(eff)" and "E(tox)" to "E(n_eff)" and "E(n_tox)".
+* Added citation information.
+
 ## 0.1
 
 * Initial package release
