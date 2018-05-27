@@ -54,11 +54,17 @@ A \emph{\link{TwoPhaseSim}} object of simulated trials.
 }
 }
 
+\seealso{
+\code{\link{TwoPhaseSim}}
+}
+
 \examples{
 design <- TwoPhaseDesign$new(1:5, 0.3, 0.50, 0.10, 0.15)
 sim <- design$simulate(eff = c(0.3, 0.375, 0.45, 0.525, 0.6),
                        tox = c(0.1, 0.1, 0.15, 0.2, 0.3))
 sim$summary()
+sim$barplot()
+sim$barplot(stats = c("E(n_tox)", "E(n)"))
 }
 
 \keyword{classes}

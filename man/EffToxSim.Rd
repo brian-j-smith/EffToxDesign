@@ -31,8 +31,15 @@ An \emph{EffToxSim} object.
 \section{Methods}{
 \describe{
 
+\item{\code{$barplot(stats = "selected")}}{
+Bar plots of simulation summary statistics.
+\describe{
+\item{\code{stats}}{character string or vector of summary statistics to plot as returned by the \code{summary} method function.}
+}
+}
+
 \item{\code{$summary()}}{
-Simulation-based summary of the operating characteristics for the trial design.
+Simulation summary statistics of the operating characteristics for the trial design.
 }
 
 }

@@ -19,14 +19,32 @@ EffToxSelect <- R6Class("EffToxSelect",
     },
   
   
-    density = function() {
-      utility <- extract(self$samples, par = "utility")[[1]]
-      df <- data.frame(
-        Utility = as.numeric(utility),
-        Dose = factor(rep(self$design$doses, each = nrow(utility)))
+    density = function(par = "utility") {
+      switch(match.arg(par, c("utility", "eff", "tox")),
+             "utility" = {
+               par <- "utility"
+               lab <- "Utility"
+               lim <- rep(NA_real_, 2)
+             },
+             "eff" = {
+               par <- "prob_eff"
+               lab <- "Pr(Efficacy)"
+               lim <- c(0, 1)
+             },
+             "tox" = {
+               par <- "prob_tox"
+               lab <- "Pr(Toxicity)"
+               lim = c(0, 1)
+             }
       )
-      ggplot(df, aes(x = Utility, group = Dose, color = Dose)) +
-        geom_density()
+      x <- extract(self$samples, par = par)[[1]]
+      df <- data.frame(x = as.numeric(x))
+      df$Dose <- factor(rep(self$design$doses, each = nrow(x)))
+      ggplot(df, aes(x = x, group = Dose, color = Dose)) +
+        geom_density() +
+        ylab("Density") +
+        xlab(lab) +
+        xlim(lim[1], lim[2])
     },
   
   

@@ -152,13 +152,13 @@ An \emph{\link{EffToxSim}} object of simulated trials.
 \references{
 Brock K, Billingham L, Copland M, Siddique S, Sirovica M, Yap C (2017). Implementing the EffTox dose-finding design in the Matchpoint trial. BMC Medical Research Methodology, 17(112):1-15.
 
-Thall PF, Cook JD (2004). Dose-finding based on efficacy-toxcity trade-offs. Biometrics, 60:684-693.
+Thall PF, Cook JD (2004). Dose-finding based on efficacy-toxicity trade-offs. Biometrics, 60:684-693.
 
 Thall PF, Herrick RC, Nguyen HQ, Venier JJ, Norris JC (2014). Effective sample size for computing prior hyperparameters in Bayesian phase I-II dose-finding. Clinical Trials, 11(6):657-666.
 }
 
 \seealso{
-\code{\link{EffToxSelect}, \link{EffToxSim}, \link{efftox_theta}}
+\code{\link{EffToxSelect}}, \code{\link{EffToxSim}}, \code{\link{efftox_theta}}
 }
 
 \examples{
@@ -203,7 +203,9 @@ sim <- design$simulate(n = 10,
                        eff = c(0.20, 0.40, 0.60, 0.80, 0.90),
                        tox = c(0.05, 0.10, 0.15, 0.20, 0.40),
                        chains = 2)
-sim$summary()}
+sim$summary()
+sim$barplot()
+sim$barplot(stats = c("E(n_tox)", "E(n)"))}
 }
 
 \keyword{classes}

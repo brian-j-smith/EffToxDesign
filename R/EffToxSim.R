@@ -11,8 +11,11 @@ EffToxSim <- R6Class("EffToxSim",
       self$outcomes <- outcomes
       invisible(self)
     },
-   
-   
+    
+    
+    barplot = function(stats = "selected") .simbarplot(self, stats),
+
+    
     summary = function() {
      
       .extract <- function(name) {

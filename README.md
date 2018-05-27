@@ -98,9 +98,12 @@ Pr(eff)  0.2000000 0.4000000  0.6000000 0.8000000 0.9000000   NA
 Pr(tox)  0.0500000 0.1000000  0.1500000 0.2000000 0.4000000   NA
 selected 0.0000000 0.1000000  0.4000000 0.2000000 0.3000000  1.0
 given    0.1230769 0.1692308  0.4076923 0.1538462 0.1461538  1.0
-E(eff)   1.3000000 2.6000000  9.5000000 4.9000000 5.1000000 23.4
-E(tox)   0.1000000 0.8000000  2.9000000 1.3000000 1.5000000  6.6
+E(n_eff) 1.3000000 2.6000000  9.5000000 4.9000000 5.1000000 23.4
+E(n_tox) 0.1000000 0.8000000  2.9000000 1.3000000 1.5000000  6.6
 E(n)     4.8000000 6.6000000 15.9000000 6.0000000 5.7000000 39.0
+
+sim$barplot()
+sim$barplot(stat = c("E(n_tox)", "E(n)"))
 ```
 
 ### Dose-Transition Pathways
@@ -145,7 +148,7 @@ selected$density()
 selected$superiority()
 ```
 
-Events can be removed from the design altogether with the ``reset`` method or selectively with the ``drop`` and ``keep`` methods.
+Events can be removed from the design altogether with the ``reset`` method or selectively with the ``drop`` and ``keep`` methods (see documenation).
 
 ```R
 design$reset()

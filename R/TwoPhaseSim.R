@@ -13,6 +13,9 @@ TwoPhaseSim <- R6Class("TwoPhaseSim",
     },
    
    
+    barplot = function(stats = "selected") .simbarplot(self, stats),
+    
+    
     summary = function() {
       .simsummary(self$truth$eff,
                   self$truth$tox,

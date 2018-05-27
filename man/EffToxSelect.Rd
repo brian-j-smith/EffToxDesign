@@ -33,8 +33,11 @@ An \emph{EffToxSelect} object.
 \section{Methods}{
 \describe{
 
-\item{\code{$density()}}{
-Dose utility density plots.
+\item{\code{$density(par = "utility")}}{
+Posterior density plots.
+\describe{
+\item{\code{par}}{character string indicating the model parameters to plot ("utility", "eff", or "tox).}
+}
 }
 
 \item{\code{$dose}}{
