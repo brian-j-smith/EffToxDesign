@@ -213,10 +213,9 @@ EffToxDesign <- R6Class("EffToxDesign",
         subsamples <- extract(samples, "utility")[[1]]
         utility[acceptable] <- colMeans(subsamples[, acceptable, drop = FALSE])
       }
-      level <- which.max(utility)
 
-      EffToxSelect$new(design = self, level = level, utility = utility,
-                       samples = samples, mpsrf = mpsrf)
+      EffToxSelect$new(design = self, level = which.max(utility),
+                       utility = utility, samples = samples, mpsrf = mpsrf)
     },
     
     
