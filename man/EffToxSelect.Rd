@@ -1,7 +1,7 @@
 \name{EffToxSelect}
 \docType{class}
 \alias{EffToxSelect}
-\alias{density, EffToxSelect-method}
+\alias{plot, EffToxSelect-method}
 \alias{superiority, EffToxSelect-method}
 
 \title{EffToxSelect Class and Methods}
@@ -33,10 +33,13 @@ An \emph{EffToxSelect} object.
 \section{Methods}{
 \describe{
 
-\item{\code{$density(par = "utility")}}{
-Posterior density plots.
+\item{\code{$plot(par = c("utility", "eff", "tox"),
+                  type = c("density", "curve"), prob = 0.95)}}{
+Posterior plots.
 \describe{
-\item{\code{par}}{character string indicating the model parameters to plot ("utility", "eff", or "tox).}
+\item{\code{par}}{character string indicating the model parameters to plot.}
+\item{\code{type}}{character string indicating the type of plot.}
+\item{\code{prob}}{credible interval probability for curve plots.}
 }
 }
 

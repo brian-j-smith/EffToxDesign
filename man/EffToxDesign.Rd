@@ -193,7 +193,7 @@ design$add(yE = c(0, 1, 0, 1, 0, 1),
            doses = c(1, 1, 1, 2, 2, 2))
 selected <- design$select()
 selected$dose
-selected$density()
+selected$plot()
 selected$superiority()
 
 \dontrun{

@@ -144,7 +144,7 @@ Efficacy and toxicity events can be added to the design as they are observed, an
 design$add(yE = c(0, 1, 0), yT = c(0, 0, 0), doses = c(2, 2, 2))
 selected <- design$select(seed = 123)
 selected$dose
-selected$density()
+selected$plot()
 selected$superiority()
 ```
 
