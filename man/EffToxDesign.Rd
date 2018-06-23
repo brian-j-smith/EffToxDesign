@@ -1,6 +1,7 @@
 \name{EffToxDesign}
 \docType{class}
 \alias{EffToxDesign}
+\alias{size, EffToxDesign-method}
 \alias{as.stan, EffToxDesign-method}
 \alias{add, EffToxDesign-method}
 \alias{drop, EffToxDesign-method}
@@ -67,6 +68,10 @@ An \emph{EffToxDesign} object.
 
 \section{Methods}{
 \describe{
+
+\item{\code{$size()}}{
+Return the number of enrolled subjects.
+}
 
 \item{\code{$as.stan()}}{
 Extract data for the stan model.

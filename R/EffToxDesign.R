@@ -81,6 +81,11 @@ EffToxDesign <- R6Class("EffToxDesign",
     },
     
     
+    size = function() {
+      length(self$levels)
+    },
+    
+    
     as.stan = function() {
       as.list(self)
     },
