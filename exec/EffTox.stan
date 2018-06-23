@@ -1,6 +1,6 @@
-// Dose-Finding Based on Efficacy-Toxicity Trade-Offs, by Thall, Cook
-// Effective sample size for computing prior hyperparameters in Bayesian phase I-II dose-finding,
-//  by Thall, Herrick, Nguyen, Venier, Norris
+// Dose-finding based on efficacy-toxicity trade-offs (Thall, Cook 2004)
+// Effective sample size for computing prior hyperparameters in Bayesian
+//   phase I-II dose-finding (Thall, Herrick, Nguyen, Venier, Norris 2014)
 
 functions {
   real log_joint_pdf(real[] coded_doses, real[] coded_doses_squ,
@@ -42,27 +42,28 @@ data {
   real<lower=0> psi_sd;
   // Fixed trial parameters
   int<lower=1> K;
-  real<lower=0> doses[K]; // Doses under investigation, e.g. 10, 20, 30 for 10mg, 20mg, 30mg
-  real p;  // The p of the L^p norm used to model the efficacy-toxicity indifference contours.
-           // See Efficacy-Toxicity trade-offs based on L-p norms: Technical Report UTMDABTR-003-06
-  real pi1E; // Minimum required Pr(Efficacy) when Pr(Toxicity) = 0
-  real pi2T; // Maximum permissable Pr(Toxicity) when Pr(Efficacy) = 1
-  real piE; // A dose is acceptable if prob(eff) exceeds this hurdle...
-  real piT; //  ... and prob(tox) is less than this hurdle
+  real<lower=0> doses[K];
+  // L^p norm for the efficacy-toxicity indifference contours
+  real p;
+  // Minimum required Pr(Efficacy) when Pr(Toxicity) = 0
+  real pi1E;
+  // Maximum permissable Pr(Toxicity) when Pr(Efficacy) = 1
+  real pi2T;
+  // A dose is acceptable if prob(eff) exceeds this hurdle
+  real piE;
+  // A dose is acceptable if prob(eff) is less than this hurdle
+  real piT;
   // Observed trial outcomes
   int<lower=0> n;
-  int<lower=0, upper=1> yE[n]; // Binary efficacy event for patients j=1,..,n
-  int<lower=0, upper=1> yT[n]; // Binary toxicity event for patients j=1,..,n
-  int<lower=1, upper=K> levels[n];  // Dose-levels given for patients j=1,..,n.
-                                    // Dose-levels are 1-based indices of real_doses
-                                    // E.g. 1 means 1st dose in real_doses was given
+  int<lower=0, upper=1> yE[n];
+  int<lower=0, upper=1> yT[n];
+  int<lower=1, upper=K> levels[n];
 }
 
 transformed data {
-  // Thall & Cook transform the actual doses by logging and centralising:
   real coded_doses[K];
-  real coded_doses_squ[K]; // The square of coded_doses
-  real mean_log_doses; // Variable created for convenience
+  real coded_doses_squ[K];
+  real mean_log_doses;
   mean_log_doses = 0.0;
   for(i in 1:K) mean_log_doses += log(doses[i]);
   mean_log_doses = mean_log_doses / K;
@@ -73,27 +74,29 @@ transformed data {
 }
 
 parameters {
-  // Coefficients in efficacy logit model:
+  // Coefficients in efficacy logit model
   real muE;
   real betaE1;
   real betaE2;
-  // Coefficients in toxicity logit model:
+  // Coefficients in toxicity logit model
   real muT;
   real<lower=0> betaT1;
-  // Association:
+  // Association paramater
   real psi;
 }
 
 transformed parameters {
-  real<lower=0, upper=1> prob_eff[K]; // Posterior probability of efficacy at doses i=1,...,K
-  real<lower=0, upper=1> prob_tox[K]; // Posterior probability of toxicity at doses i=1,...,K
-  real<lower=0, upper=1> prob_acc_eff[K]; // Probability efficacy is acceptable at doses i=1,...,K
-  real<lower=0, upper=1> prob_acc_tox[K]; // Probability toxicity is acceptable at doses i=1,...,K
-  real utility[K]; // Posterior utility of doses i=1,...,K
-  // Calculate the utility of each dose using the method described in
-  // "Efficacy-Toxicity trade-offs based on L-p norms: Technical Report UTMDABTR-003-06", John Cook
+  // Posterior probability of efficacy at doses i = 1, ..., K
+  real<lower=0, upper=1> prob_eff[K];
+  // Posterior probability of toxicity at doses i = 1, ..., K
+  real<lower=0, upper=1> prob_tox[K];
+  // Probability efficacy is acceptable at doses i = 1, ..., K
+  real<lower=0, upper=1> prob_acc_eff[K];
+  // Probability toxicity is acceptable at doses i = 1, ..., K
+  real<lower=0, upper=1> prob_acc_tox[K];
+  real utility[K];
   for(i in 1:K) {
-    real r_to_the_p; // Convenience variable, as in (2) of Cook.
+    real r_to_the_p;
     prob_eff[i] = inv_logit(muE + betaE1 * coded_doses[i] +
                             betaE2 * coded_doses_squ[i]);
     prob_tox[i] = inv_logit(muT + betaT1 * coded_doses[i]);
