@@ -1,6 +1,7 @@
 \name{EffToxDesign}
 \docType{class}
 \alias{EffToxDesign}
+\alias{as.stan, EffToxDesign-method}
 \alias{add, EffToxDesign-method}
 \alias{drop, EffToxDesign-method}
 \alias{keep, EffToxDesign-method}
@@ -66,6 +67,10 @@ An \emph{EffToxDesign} object.
 
 \section{Methods}{
 \describe{
+
+\item{\code{$as.stan()}}{
+Extract data for the stan model.
+}
 
 \item{\code{$add(yE, yT, doses, levels = NULL)}}{
 Add one or more patient outcomes.

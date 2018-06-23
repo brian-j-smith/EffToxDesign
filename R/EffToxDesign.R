@@ -81,6 +81,11 @@ EffToxDesign <- R6Class("EffToxDesign",
     },
     
     
+    as.stan = function() {
+      as.list(self)
+    },
+    
+    
     add = function(yE, yT, doses, levels = NULL) {
       if(is.null(levels)) {
         levels <- match(doses, self$doses)
@@ -175,7 +180,7 @@ EffToxDesign <- R6Class("EffToxDesign",
     
     
     select = function(mcmcdiag = FALSE, ...) {
-      samples <- sampling(stanmodels$EffTox, data = as.list(self), ...)
+      samples <- sampling(stanmodels$EffTox, data = self$as.stan(), ...)
       
       # MCMC convergence diagnostic
       mpsrf <- NA
