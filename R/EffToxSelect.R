@@ -19,6 +19,12 @@ EffToxSelect <- R6Class("EffToxSelect",
     },
     
     
+    density = function(par = "utility") {
+      warning("density() is deprecated; use plot() instead")
+      self$plot(par)
+    },
+    
+    
     plot = function(par = c("utility", "eff", "tox"),
                     type = c("density", "curve"), prob = 0.95) {
       par = match.arg(par)
@@ -76,12 +82,6 @@ EffToxSelect <- R6Class("EffToxSelect",
           xlab("Dose") +
           ylim(lim[1], lim[2])
       }
-    },
-  
-  
-    density = function(par = "utility") {
-      warning("density() is deprecated; use plot() instead")
-      self$plot(par)
     },
   
   

@@ -1,14 +1,17 @@
 \name{EffToxDesign}
 \docType{class}
 \alias{EffToxDesign}
-\alias{size, EffToxDesign-method}
-\alias{as.stan, EffToxDesign-method}
 \alias{add, EffToxDesign-method}
+\alias{as.stan, EffToxDesign-method}
+\alias{contour, EffToxDesign-method}
 \alias{drop, EffToxDesign-method}
+\alias{dtp, EffToxDesign-method}
+\alias{ESS, EffToxDesign-method}
 \alias{keep, EffToxDesign-method}
 \alias{reset, EffToxDesign-method}
 \alias{select, EffToxDesign-method}
 \alias{simulate, EffToxDesign-method}
+\alias{size, EffToxDesign-method}
 
 \title{EffToxDesign Class and Methods}
 
@@ -69,14 +72,6 @@ An \emph{EffToxDesign} object.
 \section{Methods}{
 \describe{
 
-\item{\code{$size()}}{
-Return the number of enrolled subjects.
-}
-
-\item{\code{$as.stan()}}{
-Extract data for the stan model.
-}
-
 \item{\code{$add(yE, yT, doses, levels = NULL)}}{
 Add one or more patient outcomes.
 \describe{
@@ -87,10 +82,39 @@ Add one or more patient outcomes.
 }
 }
 
+\item{\code{$as.stan()}}{
+Extract data for the stan model.
+}
+
+\item{\code{$contour(eff = NULL, tox = NULL, bins = 8, n = 25)}}{
+Plot utility contours.
+\describe{
+\item{\code{eff}}{optional vector of efficacy probabilities to include as points in the plot.}
+\item{\code{tox}}{optional vector of toxicity probabilities to include as points in the plot.}
+\item{\code{bins}}{number of contour bins.}
+\item{\code{n}}{number of points at which to evaluate the contour.}
+}
+}
+
 \item{\code{$drop(n)}}{
 Drop a terminal number of patient outcomes.
 \describe{
 \item{\code{n}}{number of outcomes to drop.}
+}
+}
+
+\item{\code{$dtp(n = 1, ...)}}{
+Calculate dose-transition pathways.
+\describe{
+\item{\code{n}}{number of future cohorts over which to calculate pathways.}
+\item{\code{...}}{parameters passed to \code{\link[rstan:stanmodel-method-sampling]{sampling}}.}
+}
+}
+
+\item{\code{$ESS()}}{
+Effective sample sizes of the efficacy and toxicity logit model priors.
+\subsection{Value}{
+Resulting ESS estimates in a vector of components named \dQuote{eff} and \dQuote{tox}.
 }
 }
 
@@ -105,23 +129,6 @@ Keep an initial number of patient outcomes.
 Reset the design by removing any existing patient outcomes.
 }
 
-\item{\code{$contour(eff = NULL, tox = NULL, bins = 8, n = 25)}}{
-Plot utility contours.
-\describe{
-\item{\code{eff}}{optional vector of efficacy probabilities to include as points in the plot.}
-\item{\code{tox}}{optional vector of toxicity probabilities to include as points in the plot.}
-\item{\code{bins}}{number of contour bins.}
-\item{\code{n}}{number of points at which to evaluate the contour.}
-}
-}
-
-\item{\code{$ESS()}}{
-Effective sample sizes of the efficacy and toxicity logit model priors.
-\subsection{Value}{
-Resulting ESS estimates in a vector of components named \dQuote{eff} and \dQuote{tox}.
-}
-}
-
 \item{\code{$select(mcmcdiag = FALSE, ...)}}{
 Identify an optimal dose based on an EffTox statistical analysis of the current patient outcomes.
 \describe{
@@ -130,14 +137,6 @@ Identify an optimal dose based on an EffTox statistical analysis of the current 
 }
 \subsection{Value}{
 An \emph{\link{EffToxSelect}} object of dose selection analysis results.
-}
-}
-
-\item{\code{$dtp(n = 1, ...)}}{
-Calculate dose-transition pathways.
-\describe{
-\item{\code{n}}{number of future cohorts over which to calculate pathways.}
-\item{\code{...}}{parameters passed to \code{\link[rstan:stanmodel-method-sampling]{sampling}}.}
 }
 }
 
@@ -154,6 +153,10 @@ Simulate an EffTox trial design.
 \subsection{Value}{
 An \emph{\link{EffToxSim}} object of simulated trials.
 }
+}
+
+\item{\code{$size()}}{
+Return the number of enrolled subjects.
 }
 
 }

@@ -81,16 +81,6 @@ EffToxDesign <- R6Class("EffToxDesign",
     },
     
     
-    size = function() {
-      length(self$levels)
-    },
-    
-    
-    as.stan = function() {
-      as.list(self)
-    },
-    
-    
     add = function(yE, yT, doses, levels = NULL) {
       if(is.null(levels)) {
         levels <- match(doses, self$doses)
@@ -105,25 +95,8 @@ EffToxDesign <- R6Class("EffToxDesign",
     },
     
     
-    drop = function(n) {
-      self$keep(self$n - n)
-      invisible(self)
-    },
-    
-    
-    keep = function(n) {
-      n <- max(n, 0)
-      self$yE <- head(self$yE, n)
-      self$yT <- head(self$yT, n)
-      self$levels <- head(self$levels, n)
-      self$n <- length(self$levels)
-      invisible(self)
-    },
-    
-    
-    reset = function() {
-      self$keep(0)
-      invisible(self)
+    as.stan = function() {
+      as.list(self)
     },
     
     
@@ -134,7 +107,7 @@ EffToxDesign <- R6Class("EffToxDesign",
                               tox_vals = seq(0, 1, length = n))
       contours$util_vals <- efftox_utility(contours$eff_vals, contours$tox_vals,
                                            self$p, self$pi1E, self$pi2T)
-
+      
       target_points <- data.frame(
         eff = c(self$pi1E, 1, self$pi3E),
         tox = c(0, self$pi2T, self$pi3T)
@@ -162,6 +135,59 @@ EffToxDesign <- R6Class("EffToxDesign",
     },
     
     
+    drop = function(n) {
+      self$keep(self$n - n)
+      invisible(self)
+    },
+    
+    
+    dtp = function(n = 1, ...) {
+      num_keep <- self$n
+      next_cohorts <- .nextcohorts(self, ...)
+      
+      # Construct all possible outcome combinations
+      cohort_paths <- next_cohorts$sizes %>%
+        head(n) %>%
+        lapply(function(size) {
+          combinations(4, size, c("E", "T", "N", "B"),
+                       repeats.allowed = TRUE) %>%
+            apply(1, paste0, collapse="")
+        }) %>%
+        expand.grid(stringsAsFactors = FALSE)
+      
+      # Dose-transition pathways
+      dtp <- matrix(NA_character_, nrow(cohort_paths), ncol(cohort_paths)) %>%
+        data.frame(stringsAsFactors = FALSE)
+      
+      starting_level <- next_cohorts$starting_level
+      if(length(starting_level) == 0) starting_level <- NA
+      cohort_levels <- rep(starting_level, nrow(cohort_paths))      
+      
+      cache <- list()
+      for(j in 1:ncol(cohort_paths)) {
+        for(i in which(!is.na(cohort_levels))) {
+          dtp[i, j] <- paste0(cohort_levels[i], cohort_paths[i, j])
+          path <- paste(dtp[i, 1:j], collapse = " ")
+          if(path %in% names(cache)) {
+            cohort_levels[i] <- cache[[path]]
+          } else {
+            outcomes <- efftox_parse_outcomes(path)
+            self$add(yE = outcomes$yE, yT = outcomes$yT, levels = outcomes$levels)
+            selected <- self$select(...)
+            cohort_levels[i] <-
+              ifelse(length(selected$level), selected$level, NA)
+            cache[[path]] <- cohort_levels[i]
+            self$keep(num_keep)
+          }
+        }
+      }
+      dtp <- cbind(dtp, cohort_levels)
+      colnames(dtp) <- paste0("cohort",
+                              next_cohorts$starting_cohort + seq(dtp) - 1)
+      return(dtp)
+    },
+    
+    
     ESS = function() {
       
       .ESS <- function(mu, sigma) {
@@ -181,6 +207,22 @@ EffToxDesign <- R6Class("EffToxDesign",
       etaT_sd <- sqrt(self$muT_sd^2 + betaT1_trunc_var * x^2)
       c("eff" = mean(mapply(.ESS, etaE_mean, etaE_sd)),
         "tox" = mean(mapply(.ESS, etaT_mean, etaT_sd)))
+    },
+    
+    
+    keep = function(n) {
+      n <- max(n, 0)
+      self$yE <- head(self$yE, n)
+      self$yT <- head(self$yT, n)
+      self$levels <- head(self$levels, n)
+      self$n <- length(self$levels)
+      invisible(self)
+    },
+    
+    
+    reset = function() {
+      self$keep(0)
+      invisible(self)
     },
     
     
@@ -229,53 +271,6 @@ EffToxDesign <- R6Class("EffToxDesign",
     },
     
     
-    dtp = function(n = 1, ...) {
-      num_keep <- self$n
-      next_cohorts <- .nextcohorts(self, ...)
-
-      # Construct all possible outcome combinations
-      cohort_paths <- next_cohorts$sizes %>%
-        head(n) %>%
-        lapply(function(size) {
-          combinations(4, size, c("E", "T", "N", "B"),
-                       repeats.allowed = TRUE) %>%
-            apply(1, paste0, collapse="")
-        }) %>%
-        expand.grid(stringsAsFactors = FALSE)
-      
-      # Dose-transition pathways
-      dtp <- matrix(NA_character_, nrow(cohort_paths), ncol(cohort_paths)) %>%
-        data.frame(stringsAsFactors = FALSE)
-
-      starting_level <- next_cohorts$starting_level
-      if(length(starting_level) == 0) starting_level <- NA
-      cohort_levels <- rep(starting_level, nrow(cohort_paths))      
-
-      cache <- list()
-      for(j in 1:ncol(cohort_paths)) {
-        for(i in which(!is.na(cohort_levels))) {
-          dtp[i, j] <- paste0(cohort_levels[i], cohort_paths[i, j])
-          path <- paste(dtp[i, 1:j], collapse = " ")
-          if(path %in% names(cache)) {
-            cohort_levels[i] <- cache[[path]]
-          } else {
-            outcomes <- efftox_parse_outcomes(path)
-            self$add(yE = outcomes$yE, yT = outcomes$yT, levels = outcomes$levels)
-            selected <- self$select(...)
-            cohort_levels[i] <-
-              ifelse(length(selected$level), selected$level, NA)
-            cache[[path]] <- cohort_levels[i]
-            self$keep(num_keep)
-          }
-        }
-      }
-      dtp <- cbind(dtp, cohort_levels)
-      colnames(dtp) <- paste0("cohort",
-                              next_cohorts$starting_cohort + seq(dtp) - 1)
-      return(dtp)
-    },
-    
-    
     simulate = function(n, eff, tox, seed = sample.int(.Machine$integer.max, 1),
                         mcmcdiag = FALSE, ...) {
       set.seed(seed)
@@ -303,6 +298,11 @@ EffToxDesign <- R6Class("EffToxDesign",
         return(outcome)
       }
       EffToxSim$new(design = self, eff = eff, tox = tox, outcomes = outcomes)
+    },
+    
+    
+    size = function() {
+      length(self$levels)
     }
   )
 )

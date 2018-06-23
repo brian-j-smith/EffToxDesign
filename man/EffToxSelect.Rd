@@ -33,6 +33,14 @@ An \emph{EffToxSelect} object.
 \section{Methods}{
 \describe{
 
+\item{\code{$dose}}{
+Selected dose.
+}
+
+\item{\code{$level}}{
+Selected dosing level.
+}
+
 \item{\code{$plot(par = c("utility", "eff", "tox"),
                   type = c("density", "curve"), prob = 0.95)}}{
 Posterior plots.
@@ -41,14 +49,6 @@ Posterior plots.
 \item{\code{type}}{character string indicating the type of plot.}
 \item{\code{prob}}{credible interval probability for curve plots.}
 }
-}
-
-\item{\code{$dose}}{
-Selected dose.
-}
-
-\item{\code{$level}}{
-Selected dosing level.
 }
 
 \item{\code{$superiority()}}{
