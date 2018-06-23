@@ -94,7 +94,7 @@ EffToxDesign <- R6Class("EffToxDesign",
     
     
     as.stan = function() {
-      data <- as.list(self)
+      data <- mget(private$stan.parms, self)
       if(self$log) data$doses <- logcenter(data$doses)
       data$K <- length(self$doses)
       data$n <- self$size()
@@ -305,5 +305,14 @@ EffToxDesign <- R6Class("EffToxDesign",
     size = function() {
       length(self$levels)
     }
+  ),
+  
+  
+  private = list(
+    stan.parms = c("doses", "piE", "piT", "pi1E", "pi2T", "p",
+                   "muE_mean", "muE_sd", "betaE1_mean", "betaE1_sd",
+                   "betaE2_mean", "betaE2_sd", "muT_mean", "muT_sd",
+                   "betaT1_mean", "betaT1_sd", "psi_mean", "psi_sd",
+                   "yE", "yT", "levels")
   )
 )
