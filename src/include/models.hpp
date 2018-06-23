@@ -27,14 +27,14 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_EffTox");
-    reader.add_event(116, 116, "end", "model_EffTox");
+    reader.add_event(110, 110, "end", "model_EffTox");
     return reader;
 }
 
 template <typename T0__, typename T1__, typename T6__, typename T7__, typename T8__, typename T9__, typename T10__, typename T11__>
 typename boost::math::tools::promote_args<T0__, T1__, T6__, T7__, typename boost::math::tools::promote_args<T8__, T9__, T10__, T11__>::type>::type
-log_joint_pdf(const std::vector<T0__>& coded_doses,
-                  const std::vector<T1__>& coded_doses_squ,
+log_joint_pdf(const std::vector<T0__>& doses,
+                  const std::vector<T1__>& doses_sq,
                   const int& n,
                   const std::vector<int>& yE,
                   const std::vector<int>& yT,
@@ -82,8 +82,8 @@ log_joint_pdf(const std::vector<T0__>& coded_doses,
             stan::math::fill(p_j,DUMMY_VAR__);
 
 
-            stan::math::assign(prob_eff, inv_logit(((muE + (betaE1 * get_base1(coded_doses,get_base1(levels,j,"levels",1),"coded_doses",1))) + (betaE2 * get_base1(coded_doses_squ,get_base1(levels,j,"levels",1),"coded_doses_squ",1)))));
-            stan::math::assign(prob_tox, inv_logit((muT + (betaT1 * get_base1(coded_doses,get_base1(levels,j,"levels",1),"coded_doses",1)))));
+            stan::math::assign(prob_eff, inv_logit(((muE + (betaE1 * get_base1(doses,get_base1(levels,j,"levels",1),"doses",1))) + (betaE2 * get_base1(doses_sq,get_base1(levels,j,"levels",1),"doses_sq",1)))));
+            stan::math::assign(prob_tox, inv_logit((muT + (betaT1 * get_base1(doses,get_base1(levels,j,"levels",1),"doses",1)))));
             stan::math::assign(p_j, ((((pow(prob_eff,get_base1(yE,j,"yE",1)) * pow((1 - prob_eff),(1 - get_base1(yE,j,"yE",1)))) * pow(prob_tox,get_base1(yT,j,"yT",1))) * pow((1 - prob_tox),(1 - get_base1(yT,j,"yT",1)))) + ((((((pow(-(1),(get_base1(yE,j,"yE",1) + get_base1(yT,j,"yT",1))) * prob_eff) * prob_tox) * (1 - prob_eff)) * (1 - prob_tox)) * (exp(psi) - 1)) / (exp(psi) + 1))));
             stan::math::assign(p, (p + log(p_j)));
             }
@@ -101,8 +101,8 @@ log_joint_pdf(const std::vector<T0__>& coded_doses,
 struct log_joint_pdf_functor__ {
     template <typename T0__, typename T1__, typename T6__, typename T7__, typename T8__, typename T9__, typename T10__, typename T11__>
         typename boost::math::tools::promote_args<T0__, T1__, T6__, T7__, typename boost::math::tools::promote_args<T8__, T9__, T10__, T11__>::type>::type
-    operator()(const std::vector<T0__>& coded_doses,
-                  const std::vector<T1__>& coded_doses_squ,
+    operator()(const std::vector<T0__>& doses,
+                  const std::vector<T1__>& doses_sq,
                   const int& n,
                   const std::vector<int>& yE,
                   const std::vector<int>& yT,
@@ -113,7 +113,7 @@ struct log_joint_pdf_functor__ {
                   const T9__& muT,
                   const T10__& betaT1,
                   const T11__& psi, std::ostream* pstream__) const {
-        return log_joint_pdf(coded_doses, coded_doses_squ, n, yE, yT, levels, muE, betaE1, betaE2, muT, betaT1, psi, pstream__);
+        return log_joint_pdf(doses, doses_sq, n, yE, yT, levels, muE, betaE1, betaE2, muT, betaT1, psi, pstream__);
     }
 };
 
@@ -142,9 +142,7 @@ private:
     vector<int> yE;
     vector<int> yT;
     vector<int> levels;
-    vector<double> coded_doses;
-    vector<double> coded_doses_squ;
-    double mean_log_doses;
+    vector<double> doses_sq;
 public:
     model_EffTox(stan::io::var_context& context__,
         std::ostream* pstream__ = 0)
@@ -323,9 +321,6 @@ public:
             check_greater_or_equal(function__,"betaT1_sd",betaT1_sd,0);
             check_greater_or_equal(function__,"psi_sd",psi_sd,0);
             check_greater_or_equal(function__,"K",K,1);
-            for (int k0__ = 0; k0__ < K; ++k0__) {
-                check_greater_or_equal(function__,"doses[k0__]",doses[k0__],0);
-            }
             check_greater_or_equal(function__,"n",n,0);
             for (int k0__ = 0; k0__ < n; ++k0__) {
                 check_greater_or_equal(function__,"yE[k0__]",yE[k0__],0);
@@ -340,25 +335,11 @@ public:
                 check_less_or_equal(function__,"levels[k0__]",levels[k0__],K);
             }
             // initialize data variables
-            validate_non_negative_index("coded_doses", "K", K);
-            coded_doses = std::vector<double>(K,double(0));
-            stan::math::fill(coded_doses,DUMMY_VAR__);
-            validate_non_negative_index("coded_doses_squ", "K", K);
-            coded_doses_squ = std::vector<double>(K,double(0));
-            stan::math::fill(coded_doses_squ,DUMMY_VAR__);
-            mean_log_doses = double(0);
-            stan::math::fill(mean_log_doses,DUMMY_VAR__);
+            validate_non_negative_index("doses_sq", "K", K);
+            doses_sq = std::vector<double>(K,double(0));
+            stan::math::fill(doses_sq,DUMMY_VAR__);
 
-            stan::math::assign(mean_log_doses, 0.0);
-            for (int i = 1; i <= K; ++i) {
-                stan::math::assign(mean_log_doses, (mean_log_doses + log(get_base1(doses,i,"doses",1))));
-            }
-            stan::math::assign(mean_log_doses, (mean_log_doses / K));
-            for (int i = 1; i <= K; ++i) {
-
-                stan::math::assign(get_base1_lhs(coded_doses,i,"coded_doses",1), (log(get_base1(doses,i,"doses",1)) - mean_log_doses));
-                stan::math::assign(get_base1_lhs(coded_doses_squ,i,"coded_doses_squ",1), pow(get_base1(coded_doses,i,"coded_doses",1),2));
-            }
+            stan::math::assign(doses_sq, square(doses));
 
             // validate transformed data
 
@@ -575,8 +556,8 @@ public:
                 stan::math::fill(r_to_the_p,DUMMY_VAR__);
 
 
-                stan::math::assign(get_base1_lhs(prob_eff,i,"prob_eff",1), inv_logit(((muE + (betaE1 * get_base1(coded_doses,i,"coded_doses",1))) + (betaE2 * get_base1(coded_doses_squ,i,"coded_doses_squ",1)))));
-                stan::math::assign(get_base1_lhs(prob_tox,i,"prob_tox",1), inv_logit((muT + (betaT1 * get_base1(coded_doses,i,"coded_doses",1)))));
+                stan::math::assign(get_base1_lhs(prob_eff,i,"prob_eff",1), inv_logit(((muE + (betaE1 * get_base1(doses,i,"doses",1))) + (betaE2 * get_base1(doses_sq,i,"doses_sq",1)))));
+                stan::math::assign(get_base1_lhs(prob_tox,i,"prob_tox",1), inv_logit((muT + (betaT1 * get_base1(doses,i,"doses",1)))));
                 stan::math::assign(get_base1_lhs(prob_acc_eff,i,"prob_acc_eff",1), int_step((get_base1(prob_eff,i,"prob_eff",1) - piE)));
                 stan::math::assign(get_base1_lhs(prob_acc_tox,i,"prob_acc_tox",1), int_step((piT - get_base1(prob_tox,i,"prob_tox",1))));
                 stan::math::assign(r_to_the_p, (pow(((1 - get_base1(prob_eff,i,"prob_eff",1)) / (1 - pi1E)),p) + pow((get_base1(prob_tox,i,"prob_tox",1) / pi2T),p)));
@@ -648,7 +629,7 @@ public:
             lp_accum__.add(normal_log(muT,muT_mean,muT_sd));
             lp_accum__.add(normal_log(betaT1,betaT1_mean,betaT1_sd));
             lp_accum__.add(normal_log(psi,psi_mean,psi_sd));
-            lp_accum__.add(log_joint_pdf(coded_doses,coded_doses_squ,n,yE,yT,levels,muE,betaE1,betaE2,muT,betaT1,psi, pstream__));
+            lp_accum__.add(log_joint_pdf(doses,doses_sq,n,yE,yT,levels,muE,betaE1,betaE2,muT,betaT1,psi, pstream__));
 
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
@@ -788,8 +769,8 @@ public:
                 stan::math::fill(r_to_the_p,DUMMY_VAR__);
 
 
-                stan::math::assign(get_base1_lhs(prob_eff,i,"prob_eff",1), inv_logit(((muE + (betaE1 * get_base1(coded_doses,i,"coded_doses",1))) + (betaE2 * get_base1(coded_doses_squ,i,"coded_doses_squ",1)))));
-                stan::math::assign(get_base1_lhs(prob_tox,i,"prob_tox",1), inv_logit((muT + (betaT1 * get_base1(coded_doses,i,"coded_doses",1)))));
+                stan::math::assign(get_base1_lhs(prob_eff,i,"prob_eff",1), inv_logit(((muE + (betaE1 * get_base1(doses,i,"doses",1))) + (betaE2 * get_base1(doses_sq,i,"doses_sq",1)))));
+                stan::math::assign(get_base1_lhs(prob_tox,i,"prob_tox",1), inv_logit((muT + (betaT1 * get_base1(doses,i,"doses",1)))));
                 stan::math::assign(get_base1_lhs(prob_acc_eff,i,"prob_acc_eff",1), int_step((get_base1(prob_eff,i,"prob_eff",1) - piE)));
                 stan::math::assign(get_base1_lhs(prob_acc_tox,i,"prob_acc_tox",1), int_step((piT - get_base1(prob_tox,i,"prob_tox",1))));
                 stan::math::assign(r_to_the_p, (pow(((1 - get_base1(prob_eff,i,"prob_eff",1)) / (1 - pi1E)),p) + pow((get_base1(prob_tox,i,"prob_tox",1) / pi2T),p)));

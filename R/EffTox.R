@@ -66,16 +66,18 @@ efftox_solve_p <- function(pi1E, pi2T, pi3E, pi3T) {
 #' @param probs vector of probabilites at which to estimate coefficients.
 #' @param doses vector of corresponding doses.
 #' @param degree degree of the polynomial dose effect in the logit model.
+#' @param log logical indicating whether doses are to be log transformed and
+#' centered in the analysis.
 #'
 #' @return A vector of coefficients.
 #'
 #' @seealso
 #' \code{\link{EffToxDesign}}
 #'
-efftox_theta <- function(probs, doses, degree = 1) {
-  x <- log(doses) - mean(log(doses))
+efftox_theta <- function(probs, doses, degree = 1, log = TRUE) {
+  if(log) doses <- logcenter(doses)
   y <- log(probs / (1 - probs))
-  structure(lm(y ~ poly(x, degree, raw = TRUE))$coef, names = NULL)
+  structure(lm(y ~ poly(doses, degree, raw = TRUE))$coef, names = NULL)
 }
 
 

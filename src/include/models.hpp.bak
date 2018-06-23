@@ -27,14 +27,14 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_EffTox");
-    reader.add_event(116, 116, "end", "model_EffTox");
+    reader.add_event(110, 110, "end", "model_EffTox");
     return reader;
 }
 
 template <typename T0__, typename T1__, typename T6__, typename T7__, typename T8__, typename T9__, typename T10__, typename T11__>
 typename boost::math::tools::promote_args<T0__, T1__, T6__, T7__, typename boost::math::tools::promote_args<T8__, T9__, T10__, T11__>::type>::type
-log_joint_pdf(const std::vector<T0__>& coded_doses,
-                  const std::vector<T1__>& coded_doses_squ,
+log_joint_pdf(const std::vector<T0__>& doses,
+                  const std::vector<T1__>& doses_sq,
                   const int& n,
                   const std::vector<int>& yE,
                   const std::vector<int>& yT,
@@ -89,9 +89,9 @@ log_joint_pdf(const std::vector<T0__>& coded_doses,
 
 
             current_statement_begin__ = 16;
-            stan::math::assign(prob_eff, inv_logit(((muE + (betaE1 * get_base1(coded_doses,get_base1(levels,j,"levels",1),"coded_doses",1))) + (betaE2 * get_base1(coded_doses_squ,get_base1(levels,j,"levels",1),"coded_doses_squ",1)))));
+            stan::math::assign(prob_eff, inv_logit(((muE + (betaE1 * get_base1(doses,get_base1(levels,j,"levels",1),"doses",1))) + (betaE2 * get_base1(doses_sq,get_base1(levels,j,"levels",1),"doses_sq",1)))));
             current_statement_begin__ = 18;
-            stan::math::assign(prob_tox, inv_logit((muT + (betaT1 * get_base1(coded_doses,get_base1(levels,j,"levels",1),"coded_doses",1)))));
+            stan::math::assign(prob_tox, inv_logit((muT + (betaT1 * get_base1(doses,get_base1(levels,j,"levels",1),"doses",1)))));
             current_statement_begin__ = 19;
             stan::math::assign(p_j, ((((pow(prob_eff,get_base1(yE,j,"yE",1)) * pow((1 - prob_eff),(1 - get_base1(yE,j,"yE",1)))) * pow(prob_tox,get_base1(yT,j,"yT",1))) * pow((1 - prob_tox),(1 - get_base1(yT,j,"yT",1)))) + ((((((pow(-(1),(get_base1(yE,j,"yE",1) + get_base1(yT,j,"yT",1))) * prob_eff) * prob_tox) * (1 - prob_eff)) * (1 - prob_tox)) * (exp(psi) - 1)) / (exp(psi) + 1))));
             current_statement_begin__ = 23;
@@ -112,8 +112,8 @@ log_joint_pdf(const std::vector<T0__>& coded_doses,
 struct log_joint_pdf_functor__ {
     template <typename T0__, typename T1__, typename T6__, typename T7__, typename T8__, typename T9__, typename T10__, typename T11__>
         typename boost::math::tools::promote_args<T0__, T1__, T6__, T7__, typename boost::math::tools::promote_args<T8__, T9__, T10__, T11__>::type>::type
-    operator()(const std::vector<T0__>& coded_doses,
-                  const std::vector<T1__>& coded_doses_squ,
+    operator()(const std::vector<T0__>& doses,
+                  const std::vector<T1__>& doses_sq,
                   const int& n,
                   const std::vector<int>& yE,
                   const std::vector<int>& yT,
@@ -124,7 +124,7 @@ struct log_joint_pdf_functor__ {
                   const T9__& muT,
                   const T10__& betaT1,
                   const T11__& psi, std::ostream* pstream__) const {
-        return log_joint_pdf(coded_doses, coded_doses_squ, n, yE, yT, levels, muE, betaE1, betaE2, muT, betaT1, psi, pstream__);
+        return log_joint_pdf(doses, doses_sq, n, yE, yT, levels, muE, betaE1, betaE2, muT, betaT1, psi, pstream__);
     }
 };
 
@@ -153,9 +153,7 @@ private:
     vector<int> yE;
     vector<int> yT;
     vector<int> levels;
-    vector<double> coded_doses;
-    vector<double> coded_doses_squ;
-    double mean_log_doses;
+    vector<double> doses_sq;
 public:
     model_EffTox(stan::io::var_context& context__,
         std::ostream* pstream__ = 0)
@@ -279,43 +277,43 @@ public:
             for (size_t i_0__ = 0; i_0__ < doses_limit_0__; ++i_0__) {
                 doses[i_0__] = vals_r__[pos__++];
             }
-            current_statement_begin__ = 46;
+            current_statement_begin__ = 47;
             context__.validate_dims("data initialization", "p", "double", context__.to_vec());
             p = double(0);
             vals_r__ = context__.vals_r("p");
             pos__ = 0;
             p = vals_r__[pos__++];
-            current_statement_begin__ = 48;
+            current_statement_begin__ = 49;
             context__.validate_dims("data initialization", "pi1E", "double", context__.to_vec());
             pi1E = double(0);
             vals_r__ = context__.vals_r("pi1E");
             pos__ = 0;
             pi1E = vals_r__[pos__++];
-            current_statement_begin__ = 49;
+            current_statement_begin__ = 51;
             context__.validate_dims("data initialization", "pi2T", "double", context__.to_vec());
             pi2T = double(0);
             vals_r__ = context__.vals_r("pi2T");
             pos__ = 0;
             pi2T = vals_r__[pos__++];
-            current_statement_begin__ = 50;
+            current_statement_begin__ = 53;
             context__.validate_dims("data initialization", "piE", "double", context__.to_vec());
             piE = double(0);
             vals_r__ = context__.vals_r("piE");
             pos__ = 0;
             piE = vals_r__[pos__++];
-            current_statement_begin__ = 51;
+            current_statement_begin__ = 55;
             context__.validate_dims("data initialization", "piT", "double", context__.to_vec());
             piT = double(0);
             vals_r__ = context__.vals_r("piT");
             pos__ = 0;
             piT = vals_r__[pos__++];
-            current_statement_begin__ = 53;
+            current_statement_begin__ = 57;
             context__.validate_dims("data initialization", "n", "int", context__.to_vec());
             n = int(0);
             vals_i__ = context__.vals_i("n");
             pos__ = 0;
             n = vals_i__[pos__++];
-            current_statement_begin__ = 54;
+            current_statement_begin__ = 58;
             validate_non_negative_index("yE", "n", n);
             context__.validate_dims("data initialization", "yE", "int", context__.to_vec(n));
             validate_non_negative_index("yE", "n", n);
@@ -326,7 +324,7 @@ public:
             for (size_t i_0__ = 0; i_0__ < yE_limit_0__; ++i_0__) {
                 yE[i_0__] = vals_i__[pos__++];
             }
-            current_statement_begin__ = 55;
+            current_statement_begin__ = 59;
             validate_non_negative_index("yT", "n", n);
             context__.validate_dims("data initialization", "yT", "int", context__.to_vec(n));
             validate_non_negative_index("yT", "n", n);
@@ -337,7 +335,7 @@ public:
             for (size_t i_0__ = 0; i_0__ < yT_limit_0__; ++i_0__) {
                 yT[i_0__] = vals_i__[pos__++];
             }
-            current_statement_begin__ = 56;
+            current_statement_begin__ = 60;
             validate_non_negative_index("levels", "n", n);
             context__.validate_dims("data initialization", "levels", "int", context__.to_vec(n));
             validate_non_negative_index("levels", "n", n);
@@ -371,81 +369,54 @@ public:
             current_statement_begin__ = 44;
             check_greater_or_equal(function__,"K",K,1);
             current_statement_begin__ = 45;
-            for (int k0__ = 0; k0__ < K; ++k0__) {
-                check_greater_or_equal(function__,"doses[k0__]",doses[k0__],0);
-            }
-            current_statement_begin__ = 46;
-            current_statement_begin__ = 48;
+            current_statement_begin__ = 47;
             current_statement_begin__ = 49;
-            current_statement_begin__ = 50;
             current_statement_begin__ = 51;
             current_statement_begin__ = 53;
+            current_statement_begin__ = 55;
+            current_statement_begin__ = 57;
             check_greater_or_equal(function__,"n",n,0);
-            current_statement_begin__ = 54;
+            current_statement_begin__ = 58;
             for (int k0__ = 0; k0__ < n; ++k0__) {
                 check_greater_or_equal(function__,"yE[k0__]",yE[k0__],0);
                 check_less_or_equal(function__,"yE[k0__]",yE[k0__],1);
             }
-            current_statement_begin__ = 55;
+            current_statement_begin__ = 59;
             for (int k0__ = 0; k0__ < n; ++k0__) {
                 check_greater_or_equal(function__,"yT[k0__]",yT[k0__],0);
                 check_less_or_equal(function__,"yT[k0__]",yT[k0__],1);
             }
-            current_statement_begin__ = 56;
+            current_statement_begin__ = 60;
             for (int k0__ = 0; k0__ < n; ++k0__) {
                 check_greater_or_equal(function__,"levels[k0__]",levels[k0__],1);
                 check_less_or_equal(function__,"levels[k0__]",levels[k0__],K);
             }
             // initialize data variables
-            current_statement_begin__ = 63;
-            validate_non_negative_index("coded_doses", "K", K);
-            coded_doses = std::vector<double>(K,double(0));
-            stan::math::fill(coded_doses,DUMMY_VAR__);
             current_statement_begin__ = 64;
-            validate_non_negative_index("coded_doses_squ", "K", K);
-            coded_doses_squ = std::vector<double>(K,double(0));
-            stan::math::fill(coded_doses_squ,DUMMY_VAR__);
+            validate_non_negative_index("doses_sq", "K", K);
+            doses_sq = std::vector<double>(K,double(0));
+            stan::math::fill(doses_sq,DUMMY_VAR__);
+
             current_statement_begin__ = 65;
-            mean_log_doses = double(0);
-            stan::math::fill(mean_log_doses,DUMMY_VAR__);
-
-            current_statement_begin__ = 66;
-            stan::math::assign(mean_log_doses, 0.0);
-            current_statement_begin__ = 67;
-            for (int i = 1; i <= K; ++i) {
-                current_statement_begin__ = 67;
-                stan::math::assign(mean_log_doses, (mean_log_doses + log(get_base1(doses,i,"doses",1))));
-            }
-            current_statement_begin__ = 68;
-            stan::math::assign(mean_log_doses, (mean_log_doses / K));
-            current_statement_begin__ = 69;
-            for (int i = 1; i <= K; ++i) {
-
-                current_statement_begin__ = 70;
-                stan::math::assign(get_base1_lhs(coded_doses,i,"coded_doses",1), (log(get_base1(doses,i,"doses",1)) - mean_log_doses));
-                current_statement_begin__ = 71;
-                stan::math::assign(get_base1_lhs(coded_doses_squ,i,"coded_doses_squ",1), pow(get_base1(coded_doses,i,"coded_doses",1),2));
-            }
+            stan::math::assign(doses_sq, square(doses));
 
             // validate transformed data
-            current_statement_begin__ = 63;
             current_statement_begin__ = 64;
-            current_statement_begin__ = 65;
 
             // validate, set parameter ranges
             num_params_r__ = 0U;
             param_ranges_i__.clear();
+            current_statement_begin__ = 70;
+            ++num_params_r__;
+            current_statement_begin__ = 71;
+            ++num_params_r__;
+            current_statement_begin__ = 72;
+            ++num_params_r__;
+            current_statement_begin__ = 74;
+            ++num_params_r__;
+            current_statement_begin__ = 75;
+            ++num_params_r__;
             current_statement_begin__ = 77;
-            ++num_params_r__;
-            current_statement_begin__ = 78;
-            ++num_params_r__;
-            current_statement_begin__ = 79;
-            ++num_params_r__;
-            current_statement_begin__ = 81;
-            ++num_params_r__;
-            current_statement_begin__ = 82;
-            ++num_params_r__;
-            current_statement_begin__ = 84;
             ++num_params_r__;
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
@@ -620,37 +591,37 @@ public:
 
 
             // transformed parameters
-            current_statement_begin__ = 88;
+            current_statement_begin__ = 82;
             validate_non_negative_index("prob_eff", "K", K);
             vector<T__> prob_eff(K);
             stan::math::initialize(prob_eff, DUMMY_VAR__);
             stan::math::fill(prob_eff,DUMMY_VAR__);
-            current_statement_begin__ = 89;
+            current_statement_begin__ = 84;
             validate_non_negative_index("prob_tox", "K", K);
             vector<T__> prob_tox(K);
             stan::math::initialize(prob_tox, DUMMY_VAR__);
             stan::math::fill(prob_tox,DUMMY_VAR__);
-            current_statement_begin__ = 90;
+            current_statement_begin__ = 86;
             validate_non_negative_index("prob_acc_eff", "K", K);
             vector<T__> prob_acc_eff(K);
             stan::math::initialize(prob_acc_eff, DUMMY_VAR__);
             stan::math::fill(prob_acc_eff,DUMMY_VAR__);
-            current_statement_begin__ = 91;
+            current_statement_begin__ = 88;
             validate_non_negative_index("prob_acc_tox", "K", K);
             vector<T__> prob_acc_tox(K);
             stan::math::initialize(prob_acc_tox, DUMMY_VAR__);
             stan::math::fill(prob_acc_tox,DUMMY_VAR__);
-            current_statement_begin__ = 92;
+            current_statement_begin__ = 89;
             validate_non_negative_index("utility", "K", K);
             vector<T__> utility(K);
             stan::math::initialize(utility, DUMMY_VAR__);
             stan::math::fill(utility,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 95;
+            current_statement_begin__ = 90;
             for (int i = 1; i <= K; ++i) {
                 {
-                current_statement_begin__ = 96;
+                current_statement_begin__ = 91;
                 T__ r_to_the_p;
                 (void) r_to_the_p;  // dummy to suppress unused var warning
 
@@ -658,17 +629,17 @@ public:
                 stan::math::fill(r_to_the_p,DUMMY_VAR__);
 
 
-                current_statement_begin__ = 97;
-                stan::math::assign(get_base1_lhs(prob_eff,i,"prob_eff",1), inv_logit(((muE + (betaE1 * get_base1(coded_doses,i,"coded_doses",1))) + (betaE2 * get_base1(coded_doses_squ,i,"coded_doses_squ",1)))));
-                current_statement_begin__ = 99;
-                stan::math::assign(get_base1_lhs(prob_tox,i,"prob_tox",1), inv_logit((muT + (betaT1 * get_base1(coded_doses,i,"coded_doses",1)))));
-                current_statement_begin__ = 100;
+                current_statement_begin__ = 92;
+                stan::math::assign(get_base1_lhs(prob_eff,i,"prob_eff",1), inv_logit(((muE + (betaE1 * get_base1(doses,i,"doses",1))) + (betaE2 * get_base1(doses_sq,i,"doses_sq",1)))));
+                current_statement_begin__ = 93;
+                stan::math::assign(get_base1_lhs(prob_tox,i,"prob_tox",1), inv_logit((muT + (betaT1 * get_base1(doses,i,"doses",1)))));
+                current_statement_begin__ = 94;
                 stan::math::assign(get_base1_lhs(prob_acc_eff,i,"prob_acc_eff",1), int_step((get_base1(prob_eff,i,"prob_eff",1) - piE)));
-                current_statement_begin__ = 101;
+                current_statement_begin__ = 95;
                 stan::math::assign(get_base1_lhs(prob_acc_tox,i,"prob_acc_tox",1), int_step((piT - get_base1(prob_tox,i,"prob_tox",1))));
-                current_statement_begin__ = 102;
+                current_statement_begin__ = 96;
                 stan::math::assign(r_to_the_p, (pow(((1 - get_base1(prob_eff,i,"prob_eff",1)) / (1 - pi1E)),p) + pow((get_base1(prob_tox,i,"prob_tox",1) / pi2T),p)));
-                current_statement_begin__ = 103;
+                current_statement_begin__ = 97;
                 stan::math::assign(get_base1_lhs(utility,i,"utility",1), (1 - pow(r_to_the_p,(1 / p))));
                 }
             }
@@ -712,44 +683,44 @@ public:
 
             const char* function__ = "validate transformed params";
             (void) function__;  // dummy to suppress unused var warning
-            current_statement_begin__ = 88;
+            current_statement_begin__ = 82;
             for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_eff[k0__]",prob_eff[k0__],0);
                 check_less_or_equal(function__,"prob_eff[k0__]",prob_eff[k0__],1);
             }
-            current_statement_begin__ = 89;
+            current_statement_begin__ = 84;
             for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_tox[k0__]",prob_tox[k0__],0);
                 check_less_or_equal(function__,"prob_tox[k0__]",prob_tox[k0__],1);
             }
-            current_statement_begin__ = 90;
+            current_statement_begin__ = 86;
             for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_acc_eff[k0__]",prob_acc_eff[k0__],0);
                 check_less_or_equal(function__,"prob_acc_eff[k0__]",prob_acc_eff[k0__],1);
             }
-            current_statement_begin__ = 91;
+            current_statement_begin__ = 88;
             for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_acc_tox[k0__]",prob_acc_tox[k0__],0);
                 check_less_or_equal(function__,"prob_acc_tox[k0__]",prob_acc_tox[k0__],1);
             }
-            current_statement_begin__ = 92;
+            current_statement_begin__ = 89;
 
             // model body
 
-            current_statement_begin__ = 108;
+            current_statement_begin__ = 102;
             lp_accum__.add(normal_log(muE,muE_mean,muE_sd));
-            current_statement_begin__ = 109;
+            current_statement_begin__ = 103;
             lp_accum__.add(normal_log(betaE1,betaE1_mean,betaE1_sd));
-            current_statement_begin__ = 110;
+            current_statement_begin__ = 104;
             lp_accum__.add(normal_log(betaE2,betaE2_mean,betaE2_sd));
-            current_statement_begin__ = 111;
+            current_statement_begin__ = 105;
             lp_accum__.add(normal_log(muT,muT_mean,muT_sd));
-            current_statement_begin__ = 112;
+            current_statement_begin__ = 106;
             lp_accum__.add(normal_log(betaT1,betaT1_mean,betaT1_sd));
-            current_statement_begin__ = 113;
+            current_statement_begin__ = 107;
             lp_accum__.add(normal_log(psi,psi_mean,psi_sd));
-            current_statement_begin__ = 114;
-            lp_accum__.add(log_joint_pdf(coded_doses,coded_doses_squ,n,yE,yT,levels,muE,betaE1,betaE2,muT,betaT1,psi, pstream__));
+            current_statement_begin__ = 108;
+            lp_accum__.add(log_joint_pdf(doses,doses_sq,n,yE,yT,levels,muE,betaE1,betaE2,muT,betaT1,psi, pstream__));
 
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
@@ -858,37 +829,37 @@ public:
         (void) DUMMY_VAR__;  // suppress unused var warning
 
         try {
-            current_statement_begin__ = 88;
+            current_statement_begin__ = 82;
             validate_non_negative_index("prob_eff", "K", K);
             vector<double> prob_eff(K, 0.0);
             stan::math::initialize(prob_eff, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(prob_eff,DUMMY_VAR__);
-            current_statement_begin__ = 89;
+            current_statement_begin__ = 84;
             validate_non_negative_index("prob_tox", "K", K);
             vector<double> prob_tox(K, 0.0);
             stan::math::initialize(prob_tox, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(prob_tox,DUMMY_VAR__);
-            current_statement_begin__ = 90;
+            current_statement_begin__ = 86;
             validate_non_negative_index("prob_acc_eff", "K", K);
             vector<double> prob_acc_eff(K, 0.0);
             stan::math::initialize(prob_acc_eff, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(prob_acc_eff,DUMMY_VAR__);
-            current_statement_begin__ = 91;
+            current_statement_begin__ = 88;
             validate_non_negative_index("prob_acc_tox", "K", K);
             vector<double> prob_acc_tox(K, 0.0);
             stan::math::initialize(prob_acc_tox, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(prob_acc_tox,DUMMY_VAR__);
-            current_statement_begin__ = 92;
+            current_statement_begin__ = 89;
             validate_non_negative_index("utility", "K", K);
             vector<double> utility(K, 0.0);
             stan::math::initialize(utility, std::numeric_limits<double>::quiet_NaN());
             stan::math::fill(utility,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 95;
+            current_statement_begin__ = 90;
             for (int i = 1; i <= K; ++i) {
                 {
-                current_statement_begin__ = 96;
+                current_statement_begin__ = 91;
                 double r_to_the_p(0.0);
                 (void) r_to_the_p;  // dummy to suppress unused var warning
 
@@ -896,43 +867,43 @@ public:
                 stan::math::fill(r_to_the_p,DUMMY_VAR__);
 
 
-                current_statement_begin__ = 97;
-                stan::math::assign(get_base1_lhs(prob_eff,i,"prob_eff",1), inv_logit(((muE + (betaE1 * get_base1(coded_doses,i,"coded_doses",1))) + (betaE2 * get_base1(coded_doses_squ,i,"coded_doses_squ",1)))));
-                current_statement_begin__ = 99;
-                stan::math::assign(get_base1_lhs(prob_tox,i,"prob_tox",1), inv_logit((muT + (betaT1 * get_base1(coded_doses,i,"coded_doses",1)))));
-                current_statement_begin__ = 100;
+                current_statement_begin__ = 92;
+                stan::math::assign(get_base1_lhs(prob_eff,i,"prob_eff",1), inv_logit(((muE + (betaE1 * get_base1(doses,i,"doses",1))) + (betaE2 * get_base1(doses_sq,i,"doses_sq",1)))));
+                current_statement_begin__ = 93;
+                stan::math::assign(get_base1_lhs(prob_tox,i,"prob_tox",1), inv_logit((muT + (betaT1 * get_base1(doses,i,"doses",1)))));
+                current_statement_begin__ = 94;
                 stan::math::assign(get_base1_lhs(prob_acc_eff,i,"prob_acc_eff",1), int_step((get_base1(prob_eff,i,"prob_eff",1) - piE)));
-                current_statement_begin__ = 101;
+                current_statement_begin__ = 95;
                 stan::math::assign(get_base1_lhs(prob_acc_tox,i,"prob_acc_tox",1), int_step((piT - get_base1(prob_tox,i,"prob_tox",1))));
-                current_statement_begin__ = 102;
+                current_statement_begin__ = 96;
                 stan::math::assign(r_to_the_p, (pow(((1 - get_base1(prob_eff,i,"prob_eff",1)) / (1 - pi1E)),p) + pow((get_base1(prob_tox,i,"prob_tox",1) / pi2T),p)));
-                current_statement_begin__ = 103;
+                current_statement_begin__ = 97;
                 stan::math::assign(get_base1_lhs(utility,i,"utility",1), (1 - pow(r_to_the_p,(1 / p))));
                 }
             }
 
             // validate transformed parameters
-            current_statement_begin__ = 88;
+            current_statement_begin__ = 82;
             for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_eff[k0__]",prob_eff[k0__],0);
                 check_less_or_equal(function__,"prob_eff[k0__]",prob_eff[k0__],1);
             }
-            current_statement_begin__ = 89;
+            current_statement_begin__ = 84;
             for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_tox[k0__]",prob_tox[k0__],0);
                 check_less_or_equal(function__,"prob_tox[k0__]",prob_tox[k0__],1);
             }
-            current_statement_begin__ = 90;
+            current_statement_begin__ = 86;
             for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_acc_eff[k0__]",prob_acc_eff[k0__],0);
                 check_less_or_equal(function__,"prob_acc_eff[k0__]",prob_acc_eff[k0__],1);
             }
-            current_statement_begin__ = 91;
+            current_statement_begin__ = 88;
             for (int k0__ = 0; k0__ < K; ++k0__) {
                 check_greater_or_equal(function__,"prob_acc_tox[k0__]",prob_acc_tox[k0__],0);
                 check_less_or_equal(function__,"prob_acc_tox[k0__]",prob_acc_tox[k0__],1);
             }
-            current_statement_begin__ = 92;
+            current_statement_begin__ = 89;
 
             // write transformed parameters
             for (int k_0__ = 0; k_0__ < K; ++k_0__) {

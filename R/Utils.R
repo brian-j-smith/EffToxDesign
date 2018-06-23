@@ -69,3 +69,6 @@
              "E(n)" = n)
   cbind(x, "all" = c(NA, NA, rowSums(x[-(1:2), ])))
 }
+
+
+logcenter <- function(x) log(x) - mean(log(x))

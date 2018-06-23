@@ -62,6 +62,8 @@ acceptable efficacy if \eqn{\Pr[\pi_E(d) > \pi_E | \text{data}] \ge p_{E,L}}{Pr[
 \item{\code{burn_in}}{minimum number of patients to enroll before the trial can stop for efficacy or toxicity; specified as a single scalar value or vector of two separate values for the respective endpoints.}
 
 \item{\code{cohort_sizes}}{vector giving the number of patients treated at each successive selected dose.}
+
+\item{\code{log}}{logical indicating whether doses are to be log transformed and centered in the analysis.}
 }
 }
 \subsection{Value}{

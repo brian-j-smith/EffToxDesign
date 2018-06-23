@@ -4,7 +4,7 @@
 \alias{efftox_theta}
 \title{Estimate EffTox logit model coefficients}
 \usage{
-efftox_theta(probs, doses, degree = 1)
+efftox_theta(probs, doses, degree = 1, log = TRUE)
 }
 \arguments{
 \item{probs}{vector of probabilites at which to estimate coefficients.}
@@ -12,6 +12,9 @@ efftox_theta(probs, doses, degree = 1)
 \item{doses}{vector of corresponding doses.}
 
 \item{degree}{degree of the polynomial dose effect in the logit model.}
+
+\item{log}{logical indicating whether doses are to be log transformed and
+centered in the analysis.}
 }
 \value{
 A vector of coefficients.

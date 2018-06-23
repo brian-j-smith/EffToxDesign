@@ -3,7 +3,7 @@
 //   phase I-II dose-finding (Thall, Herrick, Nguyen, Venier, Norris 2014)
 
 functions {
-  real log_joint_pdf(real[] coded_doses, real[] coded_doses_squ,
+  real log_joint_pdf(real[] doses, real[] doses_sq,
                      int n, int[] yE, int[] yT, int[] levels,
                      real muE, real betaE1, real betaE2, real muT, real betaT1,
                      real psi) {
@@ -13,9 +13,9 @@ functions {
       real prob_eff;
       real prob_tox;
       real p_j;
-      prob_eff = inv_logit(muE + betaE1 * coded_doses[levels[j]] +
-                           betaE2 * coded_doses_squ[levels[j]]);
-      prob_tox = inv_logit(muT + betaT1 * coded_doses[levels[j]]);
+      prob_eff = inv_logit(muE + betaE1 * doses[levels[j]] +
+                           betaE2 * doses_sq[levels[j]]);
+      prob_tox = inv_logit(muT + betaT1 * doses[levels[j]]);
       p_j = prob_eff^yE[j] * (1 - prob_eff)^(1 - yE[j]) * prob_tox^yT[j] *
               (1 - prob_tox)^(1 - yT[j]) + (-1)^(yE[j] + yT[j]) * prob_eff *
               prob_tox * (1 - prob_eff) * (1 - prob_tox) *
@@ -42,7 +42,7 @@ data {
   real<lower=0> psi_sd;
   // Fixed trial parameters
   int<lower=1> K;
-  real<lower=0> doses[K];
+  real doses[K];
   // L^p norm for the efficacy-toxicity indifference contours
   real p;
   // Minimum required Pr(Efficacy) when Pr(Toxicity) = 0
@@ -61,16 +61,8 @@ data {
 }
 
 transformed data {
-  real coded_doses[K];
-  real coded_doses_squ[K];
-  real mean_log_doses;
-  mean_log_doses = 0.0;
-  for(i in 1:K) mean_log_doses += log(doses[i]);
-  mean_log_doses = mean_log_doses / K;
-  for(i in 1:K) {
-    coded_doses[i] = log(doses[i]) - mean_log_doses;
-    coded_doses_squ[i] = coded_doses[i]^2;
-  }
+  real doses_sq[K];
+  doses_sq = square(doses);
 }
 
 parameters {
@@ -97,9 +89,8 @@ transformed parameters {
   real utility[K];
   for(i in 1:K) {
     real r_to_the_p;
-    prob_eff[i] = inv_logit(muE + betaE1 * coded_doses[i] +
-                            betaE2 * coded_doses_squ[i]);
-    prob_tox[i] = inv_logit(muT + betaT1 * coded_doses[i]);
+    prob_eff[i] = inv_logit(muE + betaE1 * doses[i] + betaE2 * doses_sq[i]);
+    prob_tox[i] = inv_logit(muT + betaT1 * doses[i]);
     prob_acc_eff[i] = int_step(prob_eff[i] - piE);
     prob_acc_tox[i] = int_step(piT - prob_tox[i]);
     r_to_the_p = ((1 - prob_eff[i]) / (1 - pi1E))^p + (prob_tox[i] / pi2T)^p;
@@ -114,6 +105,6 @@ model {
   target += normal_lpdf(muT | muT_mean, muT_sd);
   target += normal_lpdf(betaT1 | betaT1_mean, betaT1_sd);
   target += normal_lpdf(psi | psi_mean, psi_sd);
-  target += log_joint_pdf(coded_doses, coded_doses_squ, n, yE, yT, levels,
+  target += log_joint_pdf(doses, doses_sq, n, yE, yT, levels,
                           muE, betaE1, betaE2, muT, betaT1, psi);
 }

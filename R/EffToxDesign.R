@@ -1,6 +1,7 @@
 EffToxDesign <- R6Class("EffToxDesign",
   public = list(
     doses = NULL,
+    log = NULL,
 
     piE = NULL,
     pEL = NULL,
@@ -38,10 +39,11 @@ EffToxDesign <- R6Class("EffToxDesign",
     initialize = function(doses, piE, pEL, piT, pTL, pi1E, pi2T, pi3E, pi3T,
                           thetaE_mean, thetaE_sd, thetaT_mean, thetaT_sd,
                           psi_mean, psi_sd, cohort_sizes,
-                          starting_dose = doses[1], burn_in = 0) {
-      stopifnot(all(doses > 0))
+                          starting_dose = doses[1], burn_in = 0, log = TRUE) {
+      if(log) stopifnot(all(doses > 0))
       stopifnot(all(diff(doses) > 0))
       self$doses <- doses
+      self$log <- log
 
       self$piE <- piE
       self$pEL <- pEL
@@ -93,6 +95,7 @@ EffToxDesign <- R6Class("EffToxDesign",
     
     as.stan = function() {
       data <- as.list(self)
+      if(self$log) data$doses <- logcenter(data$doses)
       data$K <- length(self$doses)
       data$n <- self$size()
       data
