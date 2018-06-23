@@ -22,7 +22,7 @@
 
 
 .nextcohorts <- function(design, ...) {
-  n <- design$n
+  n <- design$size()
   if(n == 0) {
     starting_cohort <- 1
     starting_level <- design$starting_level

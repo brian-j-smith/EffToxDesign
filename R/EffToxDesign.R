@@ -1,7 +1,6 @@
 EffToxDesign <- R6Class("EffToxDesign",
   public = list(
     doses = NULL,
-    K = NULL,
 
     piE = NULL,
     pEL = NULL,
@@ -34,8 +33,7 @@ EffToxDesign <- R6Class("EffToxDesign",
     yE = numeric(0),
     yT = numeric(0),
     levels = numeric(0),
-    n = 0,
-    
+
     
     initialize = function(doses, piE, pEL, piT, pTL, pi1E, pi2T, pi3E, pi3T,
                           thetaE_mean, thetaE_sd, thetaT_mean, thetaT_sd,
@@ -44,8 +42,7 @@ EffToxDesign <- R6Class("EffToxDesign",
       stopifnot(all(doses > 0))
       stopifnot(all(diff(doses) > 0))
       self$doses <- doses
-      self$K <- length(doses)
-      
+
       self$piE <- piE
       self$pEL <- pEL
       self$piT <- piT
@@ -90,13 +87,15 @@ EffToxDesign <- R6Class("EffToxDesign",
       self$yE <- c(self$yE, yE)
       self$yT <- c(self$yT, yT)
       self$levels <- c(self$levels, levels)
-      self$n <- length(self$levels)
       invisible(self)
     },
     
     
     as.stan = function() {
-      as.list(self)
+      data <- as.list(self)
+      data$K <- length(self$doses)
+      data$n <- self$size()
+      data
     },
     
     
@@ -136,13 +135,13 @@ EffToxDesign <- R6Class("EffToxDesign",
     
     
     drop = function(n) {
-      self$keep(self$n - n)
+      self$keep(self$size() - n)
       invisible(self)
     },
     
     
     dtp = function(n = 1, ...) {
-      num_keep <- self$n
+      num_keep <- self$size()
       next_cohorts <- .nextcohorts(self, ...)
       
       # Construct all possible outcome combinations
@@ -215,7 +214,6 @@ EffToxDesign <- R6Class("EffToxDesign",
       self$yE <- head(self$yE, n)
       self$yT <- head(self$yT, n)
       self$levels <- head(self$levels, n)
-      self$n <- length(self$levels)
       invisible(self)
     },
     
@@ -242,13 +240,13 @@ EffToxDesign <- R6Class("EffToxDesign",
       }
       
       # Acceptable dosing levels
-      dosing_levels <- 1:self$K
-      acc_eff <- if(self$n >= self$burn_in[1]) {
+      dosing_levels <- seq(self$doses)
+      acc_eff <- if(self$size() >= self$burn_in[1]) {
         colMeans(extract(samples, "prob_acc_eff")[[1]]) > self$pEL
       } else {
         TRUE
       }
-      acc_tox <- if(self$n >= self$burn_in[2]) {
+      acc_tox <- if(self$size() >= self$burn_in[2]) {
         colMeans(extract(samples, "prob_acc_tox")[[1]]) > self$pTL
       } else {
         TRUE
@@ -260,7 +258,7 @@ EffToxDesign <- R6Class("EffToxDesign",
       acceptable <- acc_efftox & acc_range
       
       # Recommended level
-      utility <- rep(NA, self$K)
+      utility <- rep(NA, length(self$doses))
       if(any(acceptable)) {
         subsamples <- extract(samples, "utility")[[1]]
         utility[acceptable] <- colMeans(subsamples[, acceptable, drop = FALSE])
@@ -278,7 +276,7 @@ EffToxDesign <- R6Class("EffToxDesign",
       outcomes <- foreach(i = 1:n, .export = "self") %dopar% {
         print(paste("EffToxDesign Trial Simulation", i))
         set.seed(seeds[i])
-        num_keep <- self$n
+        num_keep <- self$size()
         next_cohorts <- .nextcohorts(self)
         cohort_level <- next_cohorts$starting_level
         next_cohort_sizes <- next_cohorts$sizes
