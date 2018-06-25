@@ -2,6 +2,11 @@
 
 ## Version Updates
 
+## 0.3
+* Added EffToxDesign option to suppress log transformation and centering of doses.
+* Added EffToxDesign as.stan and size methods.
+* Added EffToxSelect plot method for posterior density and dose-response curves.
+
 ## 0.2
 
 * Added EffToxSelect density plots for efficacy and toxicity probabilities.
