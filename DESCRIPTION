@@ -24,7 +24,6 @@ Imports:
   magrittr,
   R6,
   rstan (>= 2.12.1),
-  rstantools (>= 1.1.0),
   truncnorm
 LinkingTo: 
   StanHeaders (>= 2.12.0.1), 

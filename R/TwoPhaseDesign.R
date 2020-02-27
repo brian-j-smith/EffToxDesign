@@ -25,7 +25,7 @@ TwoPhaseDesign <- R6Class("TwoPhaseDesign",
     
     
     simulate = function(eff, tox) {
-      design1 <- threep3(tox, start = self$starting_level)
+      design1 <- threep3(tox, threep3.start = self$starting_level)
       mtd <- tapply(design1$prob, design1$mtd, sum)[-1]
       n_average <- design1$n.average + mtd * (self$n - 6)
       TwoPhaseSim$new(
