@@ -2,6 +2,9 @@
 
 ## Version Updates
 
+## 0.4
+* Fix compilation of rstan shared library.
+
 ## 0.3
 * Added EffToxDesign option to suppress log transformation and centering of doses.
 * Added EffToxDesign as.stan and size methods.

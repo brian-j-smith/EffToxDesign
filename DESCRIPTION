@@ -1,8 +1,8 @@
 Package: EffToxDesign
 Type: Package
 Title: EffTox Phase I/II Clinical Trial Design
-Version: 0.3
-Date: 2018-06-24
+Version: 0.4
+Date: 2020-02-28
 Authors@R: c(person("Brian J", "Smith", email = "brian-j-smith@uiowa.edu", role = c("aut", "cre")),
              person("Kristian", "Brock", role = c("aut")),
              person("Brian J", "Smith", role = "cph"))
@@ -34,4 +34,5 @@ LinkingTo:
 Suggests:
   knitr,
   rmarkdown
+Biarch: true
 RoxygenNote: 6.0.1
