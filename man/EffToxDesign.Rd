@@ -131,10 +131,11 @@ Keep an initial number of patient outcomes.
 Reset the design by removing any existing patient outcomes.
 }
 
-\item{\code{$select(mcmcdiag = FALSE, ...)}}{
+\item{\code{$select(mcmcdiag = FALSE, trace = FALSE, ...)}}{
 Identify an optimal dose based on an EffTox statistical analysis of the current patient outcomes.
 \describe{
 \item{\code{mcmcdiag}}{logical indicating whether to return convergence diagnostics for the MCMC output upon which analysis results are based.}
+\item{\code{trace}}{logical indicating whether to print stan MCMC sampler progress.}
 \item{\code{...}}{parameters passed to \code{\link[rstan:stanmodel-method-sampling]{sampling}}.}
 }
 \subsection{Value}{

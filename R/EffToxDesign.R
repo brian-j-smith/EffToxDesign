@@ -227,8 +227,10 @@ EffToxDesign <- R6Class("EffToxDesign",
     },
     
     
-    select = function(mcmcdiag = FALSE, ...) {
-      samples <- sampling(stanmodels$EffTox, data = self$as.stan(), ...)
+    select = function(mcmcdiag = FALSE, trace = FALSE, ...) {
+      
+      output <- if (trace) identity else capture.output
+      output(samples <- sampling(stanmodels$EffTox, data = self$as.stan(), ...))
       
       # MCMC convergence diagnostic
       mpsrf <- NA
