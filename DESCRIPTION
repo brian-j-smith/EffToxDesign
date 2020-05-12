@@ -1,13 +1,17 @@
 Package: EffToxDesign
 Type: Package
 Title: EffTox Phase I/II Clinical Trial Design
-Version: 0.4
-Date: 2020-02-28
-Authors@R: c(person("Brian J", "Smith", email = "brian-j-smith@uiowa.edu", role = c("aut", "cre")),
+Version: 0.4.1
+Date: 2020-05-12
+Authors@R: c(person("Brian J", "Smith", email = "brian-j-smith@uiowa.edu",
+                    role = c("aut", "cre")),
              person("Kristian", "Brock", role = c("aut")),
              person("Brian J", "Smith", role = "cph"))
 Maintainer: Brian J Smith <brian-j-smith@uiowa.edu>
-Description: An adaptive Bayesian design for dose-finding in combined phase I/II clinical trials based on trade-offs between the probabilities of treatment efficacy and toxicity, as developed by Thall and Cook (2004, Biometrics 60, 684-693).
+Description: An adaptive Bayesian design for dose-finding in combined phase I/II
+    clinical trials based on trade-offs between the probabilities of treatment
+    efficacy and toxicity, as developed by Thall and Cook (2004, Biometrics 60,
+    684-693).
 License: GPL-3
 Depends:
   R (>= 3.0.2),
