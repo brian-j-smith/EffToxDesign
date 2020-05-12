@@ -4,15 +4,17 @@ EffToxSelect <- R6Class("EffToxSelect",
     dose = NULL,
     level = NULL,
     utility = NULL,
+    stats = NULL,
     samples = NULL,
     mpsrf = NULL,
   
   
-    initialize = function(design, level, utility, samples, mpsrf) {
+    initialize = function(design, level, utility, stats, samples, mpsrf) {
       self$design <- design$clone()
       self$dose <- design$doses[level]
       self$level <- level
       self$utility <- utility
+      self$stats <- stats
       self$samples <- samples
       self$mpsrf <- mpsrf
       invisible(self)
